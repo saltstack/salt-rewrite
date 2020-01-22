@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "salt-rewrite"
+version = "0.1.0"
+description = "A set of Bowler code to rewrite parts of Salt"
+authors = ["Pedro Algarvio <pedro@algarvio.me>"]
+license = "Apache-2.0"
+packages = [
+  {include = "saltrewrite", from = "src" }
+]
+
+[tool.poetry.scripts]
+"salt-rewrite" = "saltrewrite.__main__:rewrite"
+
+[tool.poetry.dependencies]
+python = "^3.6"
+bowler = ">= 0.8.0"
+fissix = {version = "^19.2b1", allow-prereleases = true}
+
+[tool.poetry.dev-dependencies]
+pytest = ">= 5.3.4"
+pylint = "^2.4.4"
+pre-commit = "^1.21.0"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
