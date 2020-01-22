@@ -65,6 +65,8 @@ def remove_from_import(node, package, name):
     root = fixer_util.find_root(node)
 
     import_node = fixer_util.find_binding(name, root, package)
+    if not import_node:
+        return
     from_imports = get_from_imports(import_node)
 
     from_imports_children = []
