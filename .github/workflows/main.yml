@@ -80,6 +80,8 @@ jobs:
       run: |
         poetry install
     - name: Test
+      env:
+        OBJC_DISABLE_INITIALIZE_FORK_SAFETY: YES
       run: |
         poetry run pytest -q tests
 

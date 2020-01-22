@@ -1,10 +1,17 @@
 # -*- coding: utf-8 -*-
 import functools
 import os
+import sys
 import tempfile
 import textwrap
 
 import pytest
+
+IS_DARWIN = sys.platform.lower().startswith("darwin")
+if IS_DARWIN and sys.version_info >= (3, 8):
+    import multiprocessing
+
+    multiprocessing.set_start_method("fork")
 
 
 class Tempfiles:
