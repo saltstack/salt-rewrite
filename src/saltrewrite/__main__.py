@@ -16,7 +16,7 @@ import saltrewrite.testsuite
     "paths", nargs=-1, type=click.Path(exists=True, file_okay=True, dir_okay=True, readable=True,)
 )
 @click.option("--list-fixes", "-l", is_flag=True)
-@click.option("--interactive/--no-interactive", is_flag=True, default=True)
+@click.option("--interactive/--no-interactive", "-i/-I", is_flag=True, default=True)
 def rewrite(paths, interactive, list_fixes):
     # salt_fixes = []
     # for mod in dir(saltrewrite.salt):
@@ -46,6 +46,7 @@ def rewrite(paths, interactive, list_fixes):
     if test_fixes:
         with click.progressbar(test_fixes, item_show_func=format_progress_bar) as fixes:
             for fixname in fixes:
+                click.echo("Fix: {}".format(fixname))
                 fix = getattr(saltrewrite.testsuite, fixname)
                 fix.rewrite(paths, interactive)
 
