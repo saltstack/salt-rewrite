@@ -1,0 +1,10 @@
+---
+-   id: salt-rewrite
+    name: salt-rewrite
+    entry: salt-rewrite -I
+    language: python
+    language_version: python3.6
+    args: []
+    require_serial: false
+    additional_dependencies: []
+    types: [python]
