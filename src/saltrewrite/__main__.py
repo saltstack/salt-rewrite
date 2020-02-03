@@ -5,10 +5,8 @@
 
     ``salt-rewrite``'s CLI interface
 """
-import time
-
 import click
-import saltrewrite.testsuite
+from saltrewrite.fixes import Registry
 
 
 @click.command()
@@ -16,41 +14,28 @@ import saltrewrite.testsuite
     "paths", nargs=-1, type=click.Path(exists=True, file_okay=True, dir_okay=True, readable=True,)
 )
 @click.option("--list-fixes", "-l", is_flag=True)
+@click.option(
+    "--exclude-fix",
+    "-E",
+    type=click.Choice(Registry.fix_names(), case_sensitive=False),
+    multiple=True,
+)
 @click.option("--interactive/--no-interactive", "-i/-I", is_flag=True, default=True)
-def rewrite(paths, interactive, list_fixes):
-    # salt_fixes = []
-    # for mod in dir(saltrewrite.salt):
-    #    if not mod.startswith('fix_'):
-    #        continue
-    #    salt_fixes.append(mod)
-    test_fixes = []
-    for mod in dir(saltrewrite.testsuite):
-        if not mod.startswith("fix_"):
-            continue
-        test_fixes.append(mod)
+def rewrite(paths, interactive, list_fixes, exclude_fix):
     if list_fixes:
-        # if salt_fixes:
-        #    click.echo(
-        #        'Salt Fixes:\n{}'.format(
-        #            '\n'.join(
-        #                ' - {}'.format(fix) for fix in salt_fixes
-        #            )
-        #        )
-        #    )
-        if test_fixes:
-            click.echo(
-                "Tests Fixes:\n{}".format("\n".join(" - {}".format(fix) for fix in test_fixes))
-            )
+        click.echo(
+            "Fixes:\n{}".format("\n".join(" - {}".format(fix) for fix in Registry.fix_names()))
+        )
         return
 
-    if test_fixes:
-        with click.progressbar(test_fixes, item_show_func=format_progress_bar) as fixes:
-            for fixname in fixes:
-                click.echo("Fix: {}".format(fixname))
-                fix = getattr(saltrewrite.testsuite, fixname)
-                fix.rewrite(paths, interactive)
+    with click.progressbar(
+        Registry.fixes(exclude_fix), item_show_func=format_progress_bar
+    ) as fixes:
+        for fixname, module in fixes:
+            click.echo("Fix: {}".format(fixname))
+            module.rewrite(paths, interactive)
 
 
 def format_progress_bar(item):
     if item is not None:
-        return "Processing {}".format(item)
+        return "Processing {}".format(item[0])
