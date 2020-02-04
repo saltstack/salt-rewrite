@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from saltrewrite.testsuite import fix_asserts
 from saltrewrite.testsuite import fix_destructive_test_decorator
 from saltrewrite.testsuite import fix_expensive_test_decorator
 
