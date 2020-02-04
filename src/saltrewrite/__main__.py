@@ -32,7 +32,6 @@ def rewrite(paths, interactive, list_fixes, exclude_fix):
         Registry.fixes(exclude_fix), item_show_func=format_progress_bar
     ) as fixes:
         for fixname, module in fixes:
-            click.echo("Fix: {}".format(fixname))
             module.rewrite(paths, interactive)
 
 
