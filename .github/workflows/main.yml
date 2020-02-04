@@ -48,9 +48,27 @@ jobs:
         poetry install
     - name: Test
       run: |
-        poetry run pytest -q tests
+        poetry run coverage run -m pytest -q tests
+        poetry run coverage combine
+        poetry run coverage report --fail-under=50 --show-missing
+        poetry run coverage xml
 
-  MacOS:
+    - name: Build CodeCov Flags
+      id: codecov-flags
+      run: |
+        echo ::set-output name=py_version::$(python -c "import sys; print('py{}{}'.format(*sys.version_info))")
+
+    - name: Upload Code Coverage
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        #file: ./coverage.xml #optional
+        flags: linux,${{ steps.codecov-flags.outputs.py_version }}
+        name: Linux-Py${{ matrix.python-version }} #optional
+        #yml: ./codecov.yml #optional
+        fail_ci_if_error: true #optional (default = false)
+
+  macOS:
     needs: Linting
     runs-on: macos-latest
     strategy:
@@ -83,7 +101,25 @@ jobs:
       env:
         OBJC_DISABLE_INITIALIZE_FORK_SAFETY: YES
       run: |
-        poetry run pytest -q tests
+        poetry run coverage run -m pytest -q tests
+        poetry run coverage combine
+        poetry run coverage report --fail-under=50 --show-missing
+        poetry run coverage xml
+
+    - name: Build CodeCov Flags
+      id: codecov-flags
+      run: |
+        echo ::set-output name=py_version::$(python -c "import sys; print('py{}{}'.format(*sys.version_info))")
+
+    - name: Upload Code Coverage
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        #file: ./coverage.xml #optional
+        flags: macos,${{ steps.codecov-flags.outputs.py_version }}
+        name: macOS-Py${{ matrix.python-version }} #optional
+        #yml: ./codecov.yml #optional
+        fail_ci_if_error: true #optional (default = false)
 
 #  Windows:
 #    needs: Linting
