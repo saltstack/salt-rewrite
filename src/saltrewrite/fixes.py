@@ -24,7 +24,7 @@ class RegistryClass(object):
         )
         self.__fixes__ = OrderedDict(__sorted_fixes__)
 
-    def fixes(self, *excluded_names):
+    def fixes(self, excluded_names=()):
         for name in self.__fixes__:
             if name in excluded_names:
                 continue
