@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# pylint: disable=missing-module-docstring,missing-function-docstring
+# pylint: disable=missing-module-docstring,missing-function-docstring,too-many-lines
 import textwrap
 
 from saltrewrite.testsuite import fix_asserts
@@ -1320,6 +1320,186 @@ def test_assert_raises_with_message(tempfiles):
             with pytest.raises(ZeroDivision) as excinfo:
                 0/1
             pytest.raises(CommandExecutionError, self._kernelpkg.remove, release=1)
+    """
+    )
+    fpath = tempfiles.makepyfile(code, prefix="test_")
+    fix_asserts.rewrite(fpath, False)
+    with open(fpath) as rfh:
+        new_code = rfh.read()
+    assert new_code == expected_code
+
+
+def test_assert_dictequal(tempfiles):
+    code = textwrap.dedent(
+        """
+    from unittest import TestCase
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            self.assertDictEqual({'a': 1}, {'b': 2})
+    """
+    )
+    expected_code = textwrap.dedent(
+        """
+    from unittest import TestCase
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            assert {'a': 1} == {'b': 2}
+    """
+    )
+    fpath = tempfiles.makepyfile(code, prefix="test_")
+    fix_asserts.rewrite(fpath, False)
+    with open(fpath) as rfh:
+        new_code = rfh.read()
+    assert new_code == expected_code
+
+
+def test_assert_setqual(tempfiles):
+    code = textwrap.dedent(
+        """
+    from unittest import TestCase
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            self.assertSetEqual({'a', 1}, {'b', 2})
+    """
+    )
+    expected_code = textwrap.dedent(
+        """
+    from unittest import TestCase
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            assert {'a', 1} == {'b', 2}
+    """
+    )
+    fpath = tempfiles.makepyfile(code, prefix="test_")
+    fix_asserts.rewrite(fpath, False)
+    with open(fpath) as rfh:
+        new_code = rfh.read()
+    assert new_code == expected_code
+
+
+def test_assert_tupleequal(tempfiles):
+    code = textwrap.dedent(
+        """
+    from unittest import TestCase
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            self.assertTupleEqual(('a', 1), ('b', 2))
+    """
+    )
+    expected_code = textwrap.dedent(
+        """
+    from unittest import TestCase
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            assert ('a', 1) == ('b', 2)
+    """
+    )
+    fpath = tempfiles.makepyfile(code, prefix="test_")
+    fix_asserts.rewrite(fpath, False)
+    with open(fpath) as rfh:
+        new_code = rfh.read()
+    assert new_code == expected_code
+
+
+def test_assert_listequal(tempfiles):
+    code = textwrap.dedent(
+        """
+    from unittest import TestCase
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            self.assertListEqual(['a', 1], ['b', 2])
+    """
+    )
+    expected_code = textwrap.dedent(
+        """
+    from unittest import TestCase
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            assert ['a', 1] == ['b', 2]
+    """
+    )
+    fpath = tempfiles.makepyfile(code, prefix="test_")
+    fix_asserts.rewrite(fpath, False)
+    with open(fpath) as rfh:
+        new_code = rfh.read()
+    assert new_code == expected_code
+
+
+def test_assert_sequanceequal(tempfiles):
+    code = textwrap.dedent(
+        """
+    from unittest import TestCase
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            self.assertSequenceEqual(['a', 1], ['b', 2])
+    """
+    )
+    expected_code = textwrap.dedent(
+        """
+    from unittest import TestCase
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            assert ['a', 1] == ['b', 2]
+    """
+    )
+    fpath = tempfiles.makepyfile(code, prefix="test_")
+    fix_asserts.rewrite(fpath, False)
+    with open(fpath) as rfh:
+        new_code = rfh.read()
+    assert new_code == expected_code
+
+
+def test_assert_multilineequal(tempfiles):
+    code = textwrap.dedent(
+        """
+    from unittest import TestCase
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            a = '''
+            foo
+            '''
+            b = '''
+            bar
+            '''
+            self.assertMultiLineEqual(a, b)
+    """
+    )
+    expected_code = textwrap.dedent(
+        """
+    from unittest import TestCase
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            a = '''
+            foo
+            '''
+            b = '''
+            bar
+            '''
+            assert a == b
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
