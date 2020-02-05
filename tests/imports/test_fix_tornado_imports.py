@@ -89,3 +89,29 @@ def test_decorator_renames(tempfiles):
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
+
+
+def test_import_as_and_decorator_usage(tempfiles):
+    code = textwrap.dedent(
+        """
+    import tornado.web as tornado_web
+
+    @tornado_web.asynchronous
+    def foo():
+        pass
+    """
+    )
+    expected_code = textwrap.dedent(
+        """
+    import salt.ext.tornado.web as tornado_web
+
+    @tornado_web.asynchronous
+    def foo():
+        pass
+    """
+    )
+    fpath = tempfiles.makepyfile(code)
+    fix_tornado_imports.rewrite(fpath, False)
+    with open(fpath) as rfh:
+        new_code = rfh.read()
+    assert new_code == expected_code

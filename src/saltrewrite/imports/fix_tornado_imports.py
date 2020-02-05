@@ -51,7 +51,7 @@ def _get_decorator(node):
             name = decorator.children[1]
             assert name.type in {TOKEN.NAME, SYMBOL.dotted_name}
 
-            if str(name).startswith("tornado"):
+            if str(name).startswith("tornado."):
                 return decorator
 
 
