@@ -19,6 +19,7 @@ from fissix.fixer_util import touch_import
 from fissix.pygram import python_symbols as syms
 from fissix.pytree import Leaf
 from fissix.pytree import Node
+from saltrewrite.utils import filter_test_files
 from saltrewrite.utils import parenthesize_if_necessary
 from saltrewrite.utils import remove_from_import
 
@@ -27,6 +28,10 @@ DECORATOR = "skip_if_binaries_missing"
 
 
 def rewrite(paths, interactive):
+    # Don't waste time on non-test files
+    paths = filter_test_files(paths)
+    if not paths:
+        return
     (
         Query(paths)
         .select("classdef|funcdef")

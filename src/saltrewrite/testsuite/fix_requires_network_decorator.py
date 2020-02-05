@@ -16,6 +16,7 @@ from fissix.fixer_util import touch_import
 from fissix.pygram import python_symbols as syms
 from fissix.pytree import Leaf
 from fissix.pytree import Node
+from saltrewrite.utils import filter_test_files
 from saltrewrite.utils import remove_from_import
 
 MARKER = "pytest.mark.requires_network"
@@ -23,6 +24,10 @@ DECORATOR = "requires_network"
 
 
 def rewrite(paths, interactive):
+    # Don't waste time on non-test files
+    paths = filter_test_files(paths)
+    if not paths:
+        return
     query = Query(paths).select("classdef|funcdef")
     # Let's search decorated test classes
     query = query.filter(filter_not_decorated)

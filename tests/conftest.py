@@ -18,8 +18,8 @@ class Tempfiles:
     def __init__(self, request):
         self.request = request
 
-    def makepyfile(self, contents):
-        tfile = tempfile.NamedTemporaryFile("w", suffix=".py", delete=False)
+    def makepyfile(self, contents, prefix=None):
+        tfile = tempfile.NamedTemporaryFile("w", prefix=prefix, suffix=".py", delete=False)
         tfile.write(textwrap.dedent(contents))
         self.request.addfinalizer(functools.partial(self._delete_temp_file, tfile.name))
         return tfile.name

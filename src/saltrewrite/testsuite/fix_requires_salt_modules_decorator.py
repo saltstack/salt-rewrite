@@ -7,8 +7,6 @@
     and, in case ``pytest`` isn't yet imported, it additionall adds the missing
     import
 """
-from functools import lru_cache
-
 from bowler import Query
 from bowler import SYMBOL
 from bowler import TOKEN
@@ -19,6 +17,7 @@ from fissix.fixer_util import touch_import
 from fissix.pygram import python_symbols as syms
 from fissix.pytree import Leaf
 from fissix.pytree import Node
+from saltrewrite.utils import filter_test_files
 from saltrewrite.utils import parenthesize_if_necessary
 from saltrewrite.utils import remove_from_import
 
@@ -27,6 +26,10 @@ DECORATOR = "requires_salt_modules"
 
 
 def rewrite(paths, interactive):
+    # Don't waste time on non-test files
+    paths = filter_test_files(paths)
+    if not paths:
+        return
     (
         Query(paths)
         .select("classdef|funcdef")

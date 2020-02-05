@@ -31,7 +31,7 @@ def test_class_level(tempfiles):
             assert True
     """
     )
-    fpath = tempfiles.makepyfile(code)
+    fpath = tempfiles.makepyfile(code, prefix="test_")
     fix_requires_salt_modules_decorator.rewrite(fpath, False)
     with open(fpath) as rfh:
         new_code = rfh.read()
@@ -64,7 +64,7 @@ def test_function_level(tempfiles):
             assert True
     """
     )
-    fpath = tempfiles.makepyfile(code)
+    fpath = tempfiles.makepyfile(code, prefix="test_")
     fix_requires_salt_modules_decorator.rewrite(fpath, False)
     with open(fpath) as rfh:
         new_code = rfh.read()
@@ -99,7 +99,7 @@ def test_both_levels(tempfiles):
             assert True
     """
     )
-    fpath = tempfiles.makepyfile(code)
+    fpath = tempfiles.makepyfile(code, prefix="test_")
     fix_requires_salt_modules_decorator.rewrite(fpath, False)
     with open(fpath) as rfh:
         new_code = rfh.read()
@@ -132,7 +132,7 @@ def test_multiple_binaries_as_arguments(tempfiles):
             assert True
     """
     )
-    fpath = tempfiles.makepyfile(code)
+    fpath = tempfiles.makepyfile(code, prefix="test_")
     fix_requires_salt_modules_decorator.rewrite(fpath, False)
     with open(fpath) as rfh:
         new_code = rfh.read()
@@ -165,7 +165,7 @@ def test_multiple_binaries_first_arg_as_list(tempfiles):
             assert True
     """
     )
-    fpath = tempfiles.makepyfile(code)
+    fpath = tempfiles.makepyfile(code, prefix="test_")
     fix_requires_salt_modules_decorator.rewrite(fpath, False)
     with open(fpath) as rfh:
         new_code = rfh.read()
@@ -198,7 +198,7 @@ def test_multiple_binaries_first_arg_as_tuple(tempfiles):
             assert True
     """
     )
-    fpath = tempfiles.makepyfile(code)
+    fpath = tempfiles.makepyfile(code, prefix="test_")
     fix_requires_salt_modules_decorator.rewrite(fpath, False)
     with open(fpath) as rfh:
         new_code = rfh.read()
@@ -248,7 +248,7 @@ def test_pytest_marker_bad_input(tempfiles):
             assert True
     """
     )
-    fpath = tempfiles.makepyfile(code)
+    fpath = tempfiles.makepyfile(code, prefix="test_")
     fix_requires_salt_modules_decorator.rewrite(fpath, False)
     with open(fpath) as rfh:
         new_code = rfh.read()

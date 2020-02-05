@@ -23,6 +23,7 @@ from fissix.fixer_util import Dot
 from fissix.fixer_util import KeywordArg
 from fissix.fixer_util import touch_import
 from fissix.pygram import python_symbols as syms
+from saltrewrite.utils import filter_test_files
 from saltrewrite.utils import keyword
 from saltrewrite.utils import parenthesize_if_necessary
 
@@ -93,9 +94,14 @@ INVERT_FUNCTIONS = {
     "assertNotAlmostEqual",
 }
 BOOLEAN_VALUES = ("True", "False")
+FILE_MATCH_PATTERN = re.compile("^tests/.*")
 
 
 def rewrite(paths, interactive):
+    # Don't waste time on non-test files
+    paths = filter_test_files(paths)
+    if not paths:
+        return
     (
         Query(paths)
         .select_class("TestCase")
@@ -176,7 +182,6 @@ def Assert(test, message=None, **kwargs):
         message[1].prefix = " "
 
     node = Node(syms.assert_stmt, [Leaf(TOKEN.NAME, "assert")] + test + (message or []), **kwargs,)
-    print(123, node)
     return node
 
 

@@ -5,14 +5,14 @@
 
     @todo: add description
 """
+import os
+
 from bowler import TOKEN
 from bowler.helpers import find_first
 from fissix import fixer_util
 from fissix import pygram
-from fissix.fixer_util import KeywordArg
 from fissix.fixer_util import parenthesize
 from fissix.pytree import Leaf
-from fissix.pytree import Node
 
 
 def get_indent(node):
@@ -115,3 +115,14 @@ def keyword(name, **kwargs):
     """
     kwargs.setdefault("prefix", " ")
     return Leaf(TOKEN.NAME, name, **kwargs)
+
+
+def filter_test_files(paths):
+    if not isinstance(paths, (list, tuple)):
+        paths = [paths]
+    _paths = []
+    for path in paths:
+        if not os.path.basename(path).startswith("test_"):
+            continue
+        _paths.append(path)
+    return _paths
