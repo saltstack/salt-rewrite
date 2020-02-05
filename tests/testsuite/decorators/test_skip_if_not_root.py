@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=missing-module-docstring,missing-function-docstring
 import textwrap
 
 from saltrewrite.testsuite import fix_skip_if_not_root_decorator

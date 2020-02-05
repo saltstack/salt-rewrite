@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import tempfile
+# pylint: disable=missing-module-docstring,missing-function-docstring
 import textwrap
 
 from saltrewrite.testsuite import fix_expensive_test_decorator

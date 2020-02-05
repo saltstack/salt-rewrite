@@ -16,6 +16,9 @@ from fissix.pytree import Leaf
 
 
 def get_indent(node):
+    """
+    Returns the indent for the passed node
+    """
     indent = None
     while node:
         indent = find_first(node, TOKEN.INDENT)
@@ -32,12 +35,12 @@ def remove_import(node, name):
     Removes the import.
     """
 
-    def is_import_stmt(node):
-        return (
-            node.type == fixer_util.syms.simple_stmt
-            and node.children
-            and fixer_util.is_import(node.children[0])
-        )
+    # def is_import_stmt(node):
+    #    return (
+    #        node.type == fixer_util.syms.simple_stmt  # pylint: disable=no-member
+    #        and node.children
+    #        and fixer_util.is_import(node.children[0])
+    #    )
 
     root = fixer_util.find_root(node)
     if "." in name:
@@ -49,9 +52,12 @@ def remove_import(node, name):
 
 
 def get_from_imports(node):
+    """
+    Return `from module import bar` imports
+    """
     from_imports = []
     for child in node.children:
-        if child.type != pygram.python_symbols.import_as_names:
+        if child.type != pygram.python_symbols.import_as_names:  # pylint: disable=no-member
             continue
         for leaf in child.children:
             if leaf.type == TOKEN.NAME:
@@ -88,6 +94,9 @@ def remove_from_import(node, package, name):
 
 
 def is_multiline(node):
+    """
+    Checks if node is a multiline string
+    """
     if isinstance(node, list):
         return any(is_multiline(n) for n in node)
 
@@ -98,6 +107,9 @@ def is_multiline(node):
 
 
 def parenthesize_if_necessary(node):
+    """
+    Parenthesize node if necessary to avoid syntax errors
+    """
     if is_multiline(node):
         # If not already parenthesized, parenthesize
         for first_leaf in node.leaves():
@@ -118,6 +130,9 @@ def keyword(name, **kwargs):
 
 
 def filter_test_files(paths):
+    """
+    Filter paths which don't match a salt test module
+    """
     if not isinstance(paths, (list, tuple)):
         paths = [paths]
     _paths = []
