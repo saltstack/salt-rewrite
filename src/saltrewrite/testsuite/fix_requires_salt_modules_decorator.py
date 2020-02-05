@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-    saltrewrite.testsuite.fix_skip_if_binaries_missing_decorator
+    saltrewrite.testsuite.fix_requires_salt_modules_decorator
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    Replaces any use of ``@skip_if_binaries_missing`` with ``@pytest.mark.skip_if_binaries_missing``,
+    Replaces any use of ``@requires_salt_modules`` with ``@pytest.mark.requires_salt_modules``,
     and, in case ``pytest`` isn't yet imported, it additionall adds the missing
     import
 """
@@ -22,8 +22,8 @@ from fissix.pytree import Node
 from saltrewrite.utils import parenthesize_if_necessary
 from saltrewrite.utils import remove_from_import
 
-MARKER = "pytest.mark.skip_if_binaries_missing"
-DECORATOR = "skip_if_binaries_missing"
+MARKER = "pytest.mark.requires_salt_modules"
+DECORATOR = "requires_salt_modules"
 
 
 def rewrite(paths, interactive):
@@ -62,7 +62,7 @@ def filter_not_decorated(node, capture, filename):
 
 def replace_decorator(node, capture, filename):
     """
-    Replaces usage of ``@skip_if_binaries_missing`` with ``@pytest.mark.skip_if_binaries_missing``
+    Replaces usage of ``@requires_salt_modules`` with ``@pytest.mark.requires_salt_modules``
     """
     indent = find_indentation(node)
 
@@ -78,6 +78,7 @@ def replace_decorator(node, capture, filename):
             comma = None
             for arg_child in child.children:
                 arg_child.remove()
+                print(123, repr(arg_child))
                 if arg_child.type == syms.atom:
                     # Sometimes instead of passing expanded arguments 'foo(arg1, arg2)' a tuple or a
                     # list is passed as first argument 'foo([arg1, arg2])' or 'foo((arg1, arg2)).
@@ -85,6 +86,7 @@ def replace_decorator(node, capture, filename):
                     break_out_of_atom = False
                     comma = None
                     for atom_child in arg_child.children:
+                        print(890, atom_child)
                         if atom_child.type not in (
                             syms.listmaker,
                             syms.dictsetmaker,
@@ -143,4 +145,4 @@ def replace_decorator(node, capture, filename):
     else:
         node.prefix = ""
     touch_import(None, "pytest", node)
-    remove_from_import(node, "tests.support.helpers", "skip_if_binaries_missing")
+    remove_from_import(node, "tests.support.helpers", "requires_salt_modules")
