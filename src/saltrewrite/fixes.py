@@ -13,6 +13,9 @@ import saltrewrite.testsuite
 
 
 class RegistryClass(object):
+    """
+    Registry class to hold all available fixes
+    """
 
     __slots__ = ("__fixes__",)
 
@@ -25,13 +28,19 @@ class RegistryClass(object):
         self.__fixes__ = OrderedDict(__sorted_fixes__)
 
     def fixes(self, excluded_names=()):
+        """
+        Returns all available fixes, optionally skipping those passed in `excluded_names`
+        """
         for name in self.__fixes__:
             if name in excluded_names:
                 continue
             yield name, self.__fixes__[name]
 
     def fix_names(self):
+        """
+        Returns the list of the fix names
+        """
         return list(self.__fixes__)
 
 
-Registry = RegistryClass()
+Registry = RegistryClass()  # pylint: disable=invalid-name

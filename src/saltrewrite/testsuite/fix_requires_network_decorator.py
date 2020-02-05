@@ -7,6 +7,7 @@
     and, in case ``pytest`` isn't yet imported, it additionall adds the missing
     import
 """
+# pylint: disable=no-member
 from bowler import Query
 from bowler import SYMBOL
 from bowler import TOKEN
@@ -24,6 +25,9 @@ DECORATOR = "requires_network"
 
 
 def rewrite(paths, interactive):
+    """
+    Rewrite the passed in paths
+    """
     # Don't waste time on non-test files
     paths = filter_test_files(paths)
     if not paths:
@@ -55,6 +59,9 @@ def _get_decorator(node):
 
 
 def filter_not_decorated(node, capture, filename):
+    """
+    Filter undecorated nodes
+    """
     return bool(_get_decorator(node))
 
 

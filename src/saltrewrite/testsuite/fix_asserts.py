@@ -9,6 +9,7 @@
 
         https://github.com/craigds/decrapify/blob/master/pytestify.py
 """
+# pylint: disable=no-member,missing-function-docstring
 from functools import wraps
 
 from bowler import Query
@@ -94,10 +95,12 @@ INVERT_FUNCTIONS = {
     "assertNotAlmostEqual",
 }
 BOOLEAN_VALUES = ("True", "False")
-FILE_MATCH_PATTERN = re.compile("^tests/.*")
 
 
 def rewrite(paths, interactive):
+    """
+    Rewrite the passed in paths
+    """
     # Don't waste time on non-test files
     paths = filter_test_files(paths)
     if not paths:
@@ -170,7 +173,7 @@ def rewrite(paths, interactive):
 
 
 # TODO : Add this to fissix.fixer_util
-def Assert(test, message=None, **kwargs):
+def Assert(test, message=None, **kwargs):  # pylint: disable=invalid-name
     """Build an assertion statement"""
     if not isinstance(test, list):
         test = [test]
@@ -213,8 +216,8 @@ def conversion(func):
 
         # Un-multi-line, where a and b are on separate lines
         actual_arguments = [a.clone() for a in actual_arguments]
-        for a in actual_arguments:
-            a.prefix = " "
+        for arg in actual_arguments:
+            arg.prefix = " "
 
         # Avoid creating syntax errors for multi-line nodes
         # (this is overly restrictive, but better than overly lax)
@@ -338,15 +341,15 @@ def assertalmostequal_to_assert(node, capture, arguments):
         return None
 
     def get_kwarg_value(index, name):
-        i = 0
-        for a in arguments:
-            if a.type == syms.argument:
-                if a.children[0].value == name:
-                    return a.children[2].clone()
+        idx = 0
+        for arg in arguments:
+            if arg.type == syms.argument:
+                if arg.children[0].value == name:
+                    return arg.children[2].clone()
             else:
-                if i == index:
-                    return a.clone()
-                i += 1
+                if idx == index:
+                    return arg.clone()
+                idx += 1
         return None
 
     first = get_kwarg_value(0, "first")

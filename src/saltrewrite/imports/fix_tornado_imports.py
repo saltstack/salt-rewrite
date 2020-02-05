@@ -5,6 +5,7 @@
 
     Fix tornado imports
 """
+# pylint: disable=no-member
 from bowler import Query
 from bowler import SYMBOL
 from bowler import TOKEN
@@ -15,6 +16,9 @@ from fissix.pytree import Node
 
 
 def rewrite(paths, interactive):
+    """
+    Rewrite the passed in paths
+    """
     query = Query(paths).select_module("tornado")
     query = query.filter(filter_tornado_imports)
     query.rename("salt.ext.tornado").select_root().select("classdef|funcdef").filter(
@@ -23,6 +27,9 @@ def rewrite(paths, interactive):
 
 
 def filter_tornado_imports(node, capture, filename):
+    """
+    Filter tornado imports
+    """
     for leaf in capture["node"].leaves():
         if leaf.value == "tornado":
             return True
@@ -49,10 +56,16 @@ def _get_decorator(node):
 
 
 def filter_not_decorated(node, capture, filename):
+    """
+    Filter undecorated nodes
+    """
     return bool(_get_decorator(node))
 
 
 def get_decorator_name(decorator):
+    """
+    Returns the name of the decorator
+    """
     name = decorator.children[1]
     assert name.type in {TOKEN.NAME, SYMBOL.dotted_name}
     return str(name)
@@ -66,8 +79,6 @@ def replace_decorators(node, capture, filename):
 
     decorator = _get_decorator(node)
     decorator.remove()
-
-    print(789, repr(decorator))
 
     decorated = Node(
         SYMBOL.decorated,
