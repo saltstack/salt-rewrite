@@ -9,6 +9,8 @@ from bowler import TOKEN
 from bowler.helpers import find_first
 from fissix import fixer_util
 from fissix import pygram
+from fissix.fixer_util import KeywordArg
+from fissix.fixer_util import parenthesize
 from fissix.pytree import Leaf
 from fissix.pytree import Node
 
@@ -83,3 +85,33 @@ def remove_from_import(node, package, name):
 
     new_import = fixer_util.FromImport(package, from_imports_children)
     import_node.replace(new_import)
+
+
+def is_multiline(node):
+    if isinstance(node, list):
+        return any(is_multiline(n) for n in node)
+
+    for leaf in node.leaves():
+        if "\n" in leaf.prefix:
+            return True
+    return False
+
+
+def parenthesize_if_necessary(node):
+    if is_multiline(node):
+        # If not already parenthesized, parenthesize
+        for first_leaf in node.leaves():
+            if first_leaf.type in (TOKEN.LPAR, TOKEN.LBRACE, TOKEN.LSQB):
+                # Already parenthesized
+                return node
+            break
+        return parenthesize(node.clone())
+    return node
+
+
+def keyword(name, **kwargs):
+    """
+    A helper to produce keyword nodes
+    """
+    kwargs.setdefault("prefix", " ")
+    return Leaf(TOKEN.NAME, name, **kwargs)

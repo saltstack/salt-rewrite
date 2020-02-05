@@ -21,9 +21,10 @@ from fissix.fixer_util import Call
 from fissix.fixer_util import Comma
 from fissix.fixer_util import Dot
 from fissix.fixer_util import KeywordArg
-from fissix.fixer_util import parenthesize
 from fissix.fixer_util import touch_import
 from fissix.pygram import python_symbols as syms
+from saltrewrite.utils import keyword
+from saltrewrite.utils import parenthesize_if_necessary
 
 # NOTE: these don't take inversions into account.
 # Hence why assertNotEqual is a synonym of assertEqual
@@ -162,14 +163,6 @@ def rewrite(paths, interactive):
     )
 
 
-def keyword(name, **kwargs):
-    """
-    A helper to produce keyword nodes
-    """
-    kwargs.setdefault("prefix", " ")
-    return Leaf(TOKEN.NAME, name, **kwargs)
-
-
 # TODO : Add this to fissix.fixer_util
 def Assert(test, message=None, **kwargs):
     """Build an assertion statement"""
@@ -184,28 +177,6 @@ def Assert(test, message=None, **kwargs):
 
     node = Node(syms.assert_stmt, [Leaf(TOKEN.NAME, "assert")] + test + (message or []), **kwargs,)
     print(123, node)
-    return node
-
-
-def is_multiline(node):
-    if isinstance(node, list):
-        return any(is_multiline(n) for n in node)
-
-    for leaf in node.leaves():
-        if "\n" in leaf.prefix:
-            return True
-    return False
-
-
-def parenthesize_if_necessary(node):
-    if is_multiline(node):
-        # If not already parenthesized, parenthesize
-        for first_leaf in node.leaves():
-            if first_leaf.type in (TOKEN.LPAR, TOKEN.LBRACE, TOKEN.LSQB):
-                # Already parenthesized
-                return node
-            break
-        return parenthesize(node.clone())
     return node
 
 
