@@ -26,7 +26,6 @@ from fissix.fixer_util import touch_import
 from fissix.pygram import python_symbols as syms
 from saltrewrite.utils import filter_test_files
 from saltrewrite.utils import keyword
-from saltrewrite.utils import parenthesize_if_necessary
 
 # NOTE: these don't take inversions into account.
 # Hence why assertNotEqual is a synonym of assertEqual
@@ -238,11 +237,6 @@ def conversion(func):
         for arg in actual_arguments:
             arg.prefix = " "
 
-        # Avoid creating syntax errors for multi-line nodes
-        # (this is overly restrictive, but better than overly lax)
-        # https://github.com/facebookincubator/Bowler/issues/12
-        actual_arguments = [parenthesize_if_necessary(a) for a in actual_arguments]
-
         assertion = func(node, capture, actual_arguments)
 
         if assertion is not None:
@@ -345,7 +339,6 @@ def assertmethod_to_assert(node, capture, arguments):
         elif function_name == "assertIsNone":
             # a is not None
             assert_test_nodes = [arguments[0]] + op_tokens
-
     return Assert(assert_test_nodes, message.clone() if message else None, prefix=node.prefix)
 
 

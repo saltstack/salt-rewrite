@@ -569,6 +569,41 @@ def test_assert_true_with_message(tempfiles):
     assert new_code == expected_code
 
 
+def test_assert_true_with_message_formatted(tempfiles):
+    code = textwrap.dedent(
+        """
+    from unittest import TestCase
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            self.assertTrue(
+                'one',
+                msg='The thing why it was skipped is {}'.format(
+                    "Blah!"
+                )
+            )
+    """
+    )
+    expected_code = textwrap.dedent(
+        """
+    from unittest import TestCase
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            assert 'one', 'The thing why it was skipped is {}'.format(
+                    "Blah!"
+                )
+    """
+    )
+    fpath = tempfiles.makepyfile(code, prefix="test_")
+    fix_asserts.rewrite(fpath)
+    with open(fpath) as rfh:
+        new_code = rfh.read()
+    assert new_code == expected_code
+
+
 def test_assert_false(tempfiles):
     code = textwrap.dedent(
         """
