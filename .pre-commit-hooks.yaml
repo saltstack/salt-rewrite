@@ -1,7 +1,7 @@
 ---
 -   id: salt-rewrite
     name: salt-rewrite
-    entry: salt-rewrite -I
+    entry: salt-rewrite
     language: python
     language_version: python3.6
     args: []

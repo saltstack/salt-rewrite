@@ -11,7 +11,14 @@ from saltrewrite.fixes import Registry
 
 @click.command()
 @click.argument(
-    "paths", nargs=-1, type=click.Path(exists=True, file_okay=True, dir_okay=True, readable=True,)
+    "paths",
+    nargs=-1,
+    type=click.Path(
+        exists=True,
+        file_okay=True,
+        dir_okay=True,
+        readable=True,
+    ),
 )
 @click.option("--list-fixes", "-l", is_flag=True)
 @click.option(
@@ -20,8 +27,7 @@ from saltrewrite.fixes import Registry
     type=click.Choice(Registry.fix_names(), case_sensitive=False),
     multiple=True,
 )
-@click.option("--interactive/--no-interactive", "-i/-I", is_flag=True, default=True)
-def rewrite(paths, interactive, list_fixes, exclude_fix):
+def rewrite(paths, list_fixes, exclude_fix):
     """
     Main CLI entry-point
     """
@@ -35,7 +41,7 @@ def rewrite(paths, interactive, list_fixes, exclude_fix):
         Registry.fixes(exclude_fix), item_show_func=format_progress_bar
     ) as fixes:
         for _, module in fixes:
-            module.rewrite(paths, interactive)
+            module.rewrite(paths)
 
 
 def format_progress_bar(item):

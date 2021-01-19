@@ -23,7 +23,7 @@ MARKER = "pytest.mark.expensive_test"
 DECORATOR = "expensiveTest"
 
 
-def rewrite(paths, interactive):
+def rewrite(paths):
     """
     Rewrite the passed in paths
     """
@@ -34,7 +34,7 @@ def rewrite(paths, interactive):
     query = Query(paths).select("classdef|funcdef")
     # Let's search decorated test classes
     query = query.filter(filter_not_decorated)
-    query.modify(replace_decorator).write(interactive=interactive)
+    query.modify(replace_decorator).write()
 
 
 def _get_decorator(node):
@@ -75,7 +75,12 @@ def replace_decorator(node, capture, filename):
 
     decorated = Node(
         SYMBOL.decorated,
-        [Node(SYMBOL.decorator, [Leaf(TOKEN.AT, "@"), Name(MARKER), Leaf(TOKEN.NEWLINE, "\n")],)],
+        [
+            Node(
+                SYMBOL.decorator,
+                [Leaf(TOKEN.AT, "@"), Name(MARKER), Leaf(TOKEN.NEWLINE, "\n")],
+            )
+        ],
         prefix=decorator.prefix,
     )
     node.replace(decorated)

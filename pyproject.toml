@@ -13,7 +13,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.6"
-bowler = ">= 0.8.0"
+bowler = ">= 0.9.0"
 fissix = {version = "^19.2b1", allow-prereleases = true}
 
 [tool.poetry.dev-dependencies]

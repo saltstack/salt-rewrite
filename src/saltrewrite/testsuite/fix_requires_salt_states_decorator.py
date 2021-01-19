@@ -24,7 +24,7 @@ MARKER = "pytest.mark.requires_salt_states"
 DECORATOR = "requires_salt_states"
 
 
-def rewrite(paths, interactive):
+def rewrite(paths):
     """
     Rewrite the passed in paths
     """
@@ -37,7 +37,7 @@ def rewrite(paths, interactive):
         .select("classdef|funcdef")
         .filter(filter_not_decorated)
         .modify(replace_decorator)
-        .write(interactive=interactive)
+        .write()
     )
 
 
@@ -77,7 +77,13 @@ def replace_decorator(node, capture, filename):
     decorator = _get_decorator(node)
     decorator.remove()
 
-    decorator_node = Node(SYMBOL.decorator, [Leaf(TOKEN.AT, "@"), Name(MARKER),],)
+    decorator_node = Node(
+        SYMBOL.decorator,
+        [
+            Leaf(TOKEN.AT, "@"),
+            Name(MARKER),
+        ],
+    )
     for child in decorator.children[2:-1]:
         # childen indexing it to remove the initial '@' and '<name>' and final '\n' children
         child.remove()
@@ -144,7 +150,11 @@ def replace_decorator(node, capture, filename):
         decorator_node.append_child(child)
     decorator_node.append_child(Leaf(TOKEN.NEWLINE, "\n"))
 
-    decorated = Node(SYMBOL.decorated, [decorator_node], prefix=decorator.prefix,)
+    decorated = Node(
+        SYMBOL.decorated,
+        [decorator_node],
+        prefix=decorator.prefix,
+    )
     node.replace(decorated)
     decorated.append_child(node)
 

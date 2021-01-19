@@ -74,7 +74,10 @@ OPERATORS = {
     "assertIs": Leaf(TOKEN.NAME, "is", prefix=" "),
     "assertIn": Leaf(TOKEN.NAME, "in", prefix=" "),
     "assertTrue": [],
-    "assertIsNone": [Leaf(TOKEN.NAME, "is", prefix=" "), Leaf(TOKEN.NAME, "None", prefix=" "),],
+    "assertIsNone": [
+        Leaf(TOKEN.NAME, "is", prefix=" "),
+        Leaf(TOKEN.NAME, "None", prefix=" "),
+    ],
     "assertGreater": Leaf(TOKEN.GREATER, ">", prefix=" "),
     "assertLess": Leaf(TOKEN.LESS, "<", prefix=" "),
     "assertGreaterEqual": Leaf(TOKEN.GREATEREQUAL, ">=", prefix=" "),
@@ -97,7 +100,7 @@ INVERT_FUNCTIONS = {
 BOOLEAN_VALUES = ("True", "False")
 
 
-def rewrite(paths, interactive):
+def rewrite(paths):
     """
     Rewrite the passed in paths
     """
@@ -180,7 +183,7 @@ def rewrite(paths, interactive):
         )
         .modify(callback=handle_assertraises)
         # Actually run all of the above.
-        .write(interactive=interactive)
+        .write()
     )
 
 
@@ -196,7 +199,11 @@ def Assert(test, message=None, **kwargs):  # pylint: disable=invalid-name
         message.insert(0, Comma())
         message[1].prefix = " "
 
-    node = Node(syms.assert_stmt, [Leaf(TOKEN.NAME, "assert")] + test + (message or []), **kwargs,)
+    node = Node(
+        syms.assert_stmt,
+        [Leaf(TOKEN.NAME, "assert")] + test + (message or []),
+        **kwargs,
+    )
     return node
 
 

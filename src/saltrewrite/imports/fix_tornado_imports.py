@@ -15,7 +15,7 @@ from fissix.pytree import Leaf
 from fissix.pytree import Node
 
 
-def rewrite(paths, interactive):
+def rewrite(paths):
     """
     Rewrite the passed in paths
     """
@@ -23,7 +23,7 @@ def rewrite(paths, interactive):
     query = query.filter(filter_tornado_imports)
     query.rename("salt.ext.tornado").select_root().select("classdef|funcdef").filter(
         filter_not_decorated
-    ).modify(replace_decorators).write(interactive=interactive)
+    ).modify(replace_decorators).write()
 
 
 def filter_tornado_imports(node, capture, filename):

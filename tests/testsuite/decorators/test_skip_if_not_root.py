@@ -32,7 +32,7 @@ def test_class_level(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_skip_if_not_root_decorator.rewrite(fpath, False)
+    fix_skip_if_not_root_decorator.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -65,7 +65,7 @@ def test_function_level(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_skip_if_not_root_decorator.rewrite(fpath, False)
+    fix_skip_if_not_root_decorator.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -100,7 +100,7 @@ def test_both_levels(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_skip_if_not_root_decorator.rewrite(fpath, False)
+    fix_skip_if_not_root_decorator.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code

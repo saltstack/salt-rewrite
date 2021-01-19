@@ -27,7 +27,7 @@ def test_assert_equal(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -55,7 +55,7 @@ def test_assert_equal_with_message(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -83,7 +83,7 @@ def test_assert_equals(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -111,7 +111,7 @@ def test_assert_equals_with_message(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -139,7 +139,7 @@ def test_fail_unless_equal(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -167,7 +167,7 @@ def test_fail_unless_equal_with_message(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -195,7 +195,7 @@ def test_assert_not_equal(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -223,7 +223,7 @@ def test_assert_not_equal_with_message(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -251,7 +251,7 @@ def test_fail_if_equal(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -279,7 +279,7 @@ def test_fail_if_equal_with_message(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -307,7 +307,7 @@ def test_assert_is(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -335,7 +335,7 @@ def test_assert_is_with_message(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -363,7 +363,7 @@ def test_assert_is_not(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -391,7 +391,7 @@ def test_assert_is_not_with_message(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -419,7 +419,7 @@ def test_assert_in(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -447,7 +447,7 @@ def test_assert_in_with_message(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -475,7 +475,7 @@ def test_assert_not_in(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -503,7 +503,7 @@ def test_assert_not_in_with_message(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -533,7 +533,7 @@ def test_assert_true(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -563,7 +563,7 @@ def test_assert_true_with_message(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -591,7 +591,7 @@ def test_assert_false(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -619,7 +619,7 @@ def test_assert_false_with_message(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -647,7 +647,7 @@ def test_fail_unless(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -675,7 +675,7 @@ def test_fail_unless_with_message(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -703,7 +703,7 @@ def test_fail_if(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -731,7 +731,7 @@ def test_fail_if_with_message(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -759,7 +759,7 @@ def test_assert_is_none(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -787,7 +787,7 @@ def test_assert_is_none_with_message(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -815,7 +815,7 @@ def test_assert_is_not_none(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -843,7 +843,7 @@ def test_assert_is_not_none_with_message(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -871,7 +871,7 @@ def test_assert_greater(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -899,7 +899,7 @@ def test_assert_greater_with_message(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -927,7 +927,7 @@ def test_assert_greater_equal(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -955,7 +955,7 @@ def test_assert_greater_equal_with_message(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -983,7 +983,7 @@ def test_assert_less(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -1011,7 +1011,7 @@ def test_assert_less_with_message(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -1039,7 +1039,7 @@ def test_assert_less_equal(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -1067,7 +1067,7 @@ def test_assert_less_equal_with_message(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -1095,7 +1095,7 @@ def test_assert_is_instance(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -1123,7 +1123,7 @@ def test_assert_is_instance_with_message(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -1151,7 +1151,7 @@ def test_assert_not_is_instance(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -1179,7 +1179,7 @@ def test_assert_not_is_instance_with_message(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -1214,7 +1214,7 @@ def test_assert_not_almost_equal(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -1249,7 +1249,7 @@ def test_assert_not_almost_equal_with_message(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -1286,7 +1286,7 @@ def test_assert_raises(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -1323,7 +1323,7 @@ def test_assert_raises_with_message(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -1351,7 +1351,7 @@ def test_assert_dictequal(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -1379,7 +1379,7 @@ def test_assert_setqual(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -1407,7 +1407,7 @@ def test_assert_tupleequal(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -1435,7 +1435,7 @@ def test_assert_listequal(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -1463,7 +1463,7 @@ def test_assert_sequanceequal(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -1503,7 +1503,7 @@ def test_assert_multilineequal(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")
-    fix_asserts.rewrite(fpath, False)
+    fix_asserts.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code

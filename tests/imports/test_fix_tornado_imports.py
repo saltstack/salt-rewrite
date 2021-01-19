@@ -17,7 +17,7 @@ def test_module_level_package_import(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code)
-    fix_tornado_imports.rewrite(fpath, False)
+    fix_tornado_imports.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -35,7 +35,7 @@ def test_module_level_from_package_import(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code)
-    fix_tornado_imports.rewrite(fpath, False)
+    fix_tornado_imports.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -59,7 +59,7 @@ def test_module_level_package_import_usage_renames(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code)
-    fix_tornado_imports.rewrite(fpath, False)
+    fix_tornado_imports.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -85,7 +85,7 @@ def test_decorator_renames(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code)
-    fix_tornado_imports.rewrite(fpath, False)
+    fix_tornado_imports.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
@@ -111,7 +111,7 @@ def test_import_as_and_decorator_usage(tempfiles):
     """
     )
     fpath = tempfiles.makepyfile(code)
-    fix_tornado_imports.rewrite(fpath, False)
+    fix_tornado_imports.rewrite(fpath)
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
