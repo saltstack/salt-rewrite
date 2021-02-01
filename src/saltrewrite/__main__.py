@@ -8,6 +8,11 @@
 import click
 from saltrewrite.fixes import Registry
 
+try:
+    from importlib.metadata import version
+except ImportError:
+    from importlib_metadata import version
+
 
 @click.command()
 @click.argument(
@@ -27,6 +32,7 @@ from saltrewrite.fixes import Registry
     type=click.Choice(Registry.fix_names(), case_sensitive=False),
     multiple=True,
 )
+@click.version_option(version="salt-rewrite")
 def rewrite(paths, list_fixes, exclude_fix):
     """
     Main CLI entry-point

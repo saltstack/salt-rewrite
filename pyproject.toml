@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "salt-rewrite"
-version = "0.9.0"
+version = "0.10.0"
 description = "A set of Bowler code to rewrite parts of Salt"
 authors = ["Pedro Algarvio <pedro@algarvio.me>"]
 license = "Apache-2.0"
@@ -15,6 +15,7 @@ packages = [
 python = "^3.6"
 bowler = ">= 0.9.0"
 fissix = {version = "^19.2b1", allow-prereleases = true}
+importlib_metadata = {version = "*", python="<3.8"}
 
 [tool.poetry.dev-dependencies]
 pytest = ">= 5.3.4"
