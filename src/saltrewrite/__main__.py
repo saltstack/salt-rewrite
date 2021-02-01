@@ -32,7 +32,7 @@ except ImportError:
     type=click.Choice(Registry.fix_names(), case_sensitive=False),
     multiple=True,
 )
-@click.version_option(version="salt-rewrite")
+@click.version_option(version=version("salt-rewrite"))
 def rewrite(paths, list_fixes, exclude_fix):
     """
     Main CLI entry-point

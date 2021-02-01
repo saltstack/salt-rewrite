@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "salt-rewrite"
-version = "0.10.0"
+version = "0.10.1"
 description = "A set of Bowler code to rewrite parts of Salt"
 authors = ["Pedro Algarvio <pedro@algarvio.me>"]
 license = "Apache-2.0"
