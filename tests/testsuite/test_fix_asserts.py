@@ -1542,3 +1542,130 @@ def test_assert_multilineequal(tempfiles):
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
+
+
+def test_assert_regex(tempfiles):
+    code = textwrap.dedent(
+        """
+    from unittest import TestCase
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            pattern = "^foo"
+            match = "foo"
+            self.assertRegex(match, pattern)
+    """
+    )
+    expected_code = textwrap.dedent(
+        """
+    from unittest import TestCase
+    import re
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            pattern = "^foo"
+            match = "foo"
+            assert re.search(pattern, match)
+    """
+    )
+    fpath = tempfiles.makepyfile(code, prefix="test_")
+    fix_asserts.rewrite(fpath)
+    with open(fpath) as rfh:
+        new_code = rfh.read()
+    assert new_code == expected_code
+
+    code = textwrap.dedent(
+        """
+    from unittest import TestCase
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            pattern = "^foo"
+            match = "foo"
+            self.assertRegex(match, pattern, msg="blah")
+    """
+    )
+    expected_code = textwrap.dedent(
+        """
+    from unittest import TestCase
+    import re
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            pattern = "^foo"
+            match = "foo"
+            assert re.search(pattern, match), "blah"
+    """
+    )
+    fpath = tempfiles.makepyfile(code, prefix="test_msg_")
+    fix_asserts.rewrite(fpath)
+    with open(fpath) as rfh:
+        new_code = rfh.read()
+    assert new_code == expected_code
+
+
+def test_assert_not_regex(tempfiles):
+    code = textwrap.dedent(
+        """
+    from unittest import TestCase
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            pattern = "^foo"
+            match = "foo"
+            self.assertNotRegex(match, pattern)
+    """
+    )
+    expected_code = textwrap.dedent(
+        """
+    from unittest import TestCase
+    import re
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            pattern = "^foo"
+            match = "foo"
+            assert not re.search(pattern, match)
+    """
+    )
+    fpath = tempfiles.makepyfile(code, prefix="test_")
+    fix_asserts.rewrite(fpath)
+    with open(fpath) as rfh:
+        new_code = rfh.read()
+    assert new_code == expected_code
+    code = textwrap.dedent(
+        """
+    from unittest import TestCase
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            pattern = "^foo"
+            match = "foo"
+            self.assertNotRegex(match, pattern, msg="blah")
+    """
+    )
+    expected_code = textwrap.dedent(
+        """
+    from unittest import TestCase
+    import re
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            pattern = "^foo"
+            match = "foo"
+            assert not re.search(pattern, match), "blah"
+    """
+    )
+    fpath = tempfiles.makepyfile(code, prefix="test_msg_")
+    fix_asserts.rewrite(fpath)
+    with open(fpath) as rfh:
+        new_code = rfh.read()
+    assert new_code == expected_code

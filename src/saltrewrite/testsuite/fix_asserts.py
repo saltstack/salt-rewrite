@@ -49,6 +49,7 @@ SYNONYMS = {
     "assertDictEqual": "assertEqual",
     "assertNotIsInstance": "assertIsInstance",
     "assertNotAlmostEqual": "assertAlmostEqual",
+    "assertNotRegex": "assertRegex",
 }
 
 
@@ -61,10 +62,10 @@ ARGUMENTS = {
     "assertGreaterEqual": 2,
     "assertLessEqual": 2,
     "assertIsInstance": 2,
-    # TODO: assertRaises()
     "assertAlmostEqual": 2,
     "assertTrue": 1,
     "assertIsNone": 1,
+    "assertRegex": 2,
 }
 
 
@@ -95,6 +96,7 @@ INVERT_FUNCTIONS = {
     "assertIsNotNone",
     "assertNotIsInstance",
     "assertNotAlmostEqual",
+    "assertNotRegex",
 }
 BOOLEAN_VALUES = ("True", "False")
 
@@ -181,6 +183,10 @@ def rewrite(paths):
         """
         )
         .modify(callback=handle_assertraises)
+        .select_method("assertRegex")
+        .modify(callback=handle_assert_regex)
+        .select_method("assertNotRegex")
+        .modify(callback=handle_assert_regex)
         # Actually run all of the above.
         .write()
     )
@@ -463,3 +469,51 @@ def handle_assertraises(node, capture, arguments):
 
     # Adds a 'import pytest' if there wasn't one already
     touch_import(None, "pytest", node)
+
+
+@conversion
+def handle_assert_regex(node, capture, arguments):
+    """
+    self.assertRegex(text, pattern, msg)
+    --> assert re.search(pattern, text), msg
+
+    self.assertNotRegex(text, pattern, msg)
+    --> assert not re.search(pattern, text), msg
+
+    """
+    function_name = capture["function_name"].value
+    invert = function_name in INVERT_FUNCTIONS
+    function_name = SYNONYMS.get(function_name, function_name)
+    num_arguments = ARGUMENTS[function_name]
+
+    if len(arguments) not in (num_arguments, num_arguments + 1):
+        # Not sure what this is. Leave it alone.
+        return None
+
+    if len(arguments) == num_arguments:
+        message = None
+    else:
+        message = arguments.pop()
+        if message.type == syms.argument:
+            # keyword argument (e.g. `msg=abc`)
+            message = message.children[2].clone()
+
+    arguments[0].prefix = " "
+    arguments[1].prefix = ""
+
+    # Adds a 'import re' if there wasn't one already
+    touch_import(None, "re", node)
+
+    op_tokens = []
+    if invert:
+        op_tokens.append(keyword("not"))
+
+    assert_test_nodes = [
+        Node(
+            syms.power,
+            op_tokens
+            + Attr(keyword("re"), keyword("search", prefix=""))
+            + [ArgList([arguments[1], Comma(), arguments[0]])],
+        )
+    ]
+    return Assert(assert_test_nodes, message.clone() if message else None, prefix=node.prefix)
