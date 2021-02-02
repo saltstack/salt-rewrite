@@ -104,3 +104,40 @@ def test_both_levels(tempfiles):
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
+
+
+def test_multiple_decorators_preserve_order(tempfiles):
+    code = textwrap.dedent(
+        """
+    from unittest import TestCase
+    from tests.support.helpers import slowTest
+
+    class TestFoo(TestCase):
+
+        @decorator1
+        @slowTest
+        @decorator2
+        def test_one(self):
+            assert True
+    """
+    )
+    expected_code = textwrap.dedent(
+        """
+    from unittest import TestCase
+
+    import pytest
+
+    class TestFoo(TestCase):
+
+        @decorator1
+        @pytest.mark.slow_test
+        @decorator2
+        def test_one(self):
+            assert True
+    """
+    )
+    fpath = tempfiles.makepyfile(code, prefix="test_")
+    fix_slow_test_decorator.rewrite(fpath)
+    with open(fpath) as rfh:
+        new_code = rfh.read()
+    assert new_code == expected_code

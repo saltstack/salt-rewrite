@@ -12,7 +12,7 @@ def test_class_level(tempfiles):
     from tests.support.helpers import requires_salt_modules
 
     @requires_salt_modules('ps')
-    class TestFoo(TestCase):
+    class Test1(TestCase):
 
         def test_one(self):
             assert True
@@ -25,7 +25,7 @@ def test_class_level(tempfiles):
     import pytest
 
     @pytest.mark.requires_salt_modules('ps')
-    class TestFoo(TestCase):
+    class Test1(TestCase):
 
         def test_one(self):
             assert True
@@ -178,7 +178,7 @@ def test_multiple_binaries_first_arg_as_tuple(tempfiles):
     from unittest import TestCase
     from tests.support.helpers import requires_salt_modules
 
-    @requires_salt_modules(['ps', 'pstree'])
+    @requires_salt_modules(('ps', 'pstree'))
     class TestFoo(TestCase):
 
         def test_one(self):
@@ -193,6 +193,76 @@ def test_multiple_binaries_first_arg_as_tuple(tempfiles):
 
     @pytest.mark.requires_salt_modules('ps', 'pstree')
     class TestFoo(TestCase):
+
+        def test_one(self):
+            assert True
+    """
+    )
+    fpath = tempfiles.makepyfile(code, prefix="test_")
+    fix_requires_salt_modules_decorator.rewrite(fpath)
+    with open(fpath) as rfh:
+        new_code = rfh.read()
+    assert new_code == expected_code
+
+
+def test_multiple_binaries_first_arg_as_set(tempfiles):
+    code = textwrap.dedent(
+        """
+    from unittest import TestCase
+    from tests.support.helpers import requires_salt_modules
+
+    @requires_salt_modules({'ps', 'pstree'})
+    class TestFoo(TestCase):
+
+        def test_one(self):
+            assert True
+    """
+    )
+    expected_code = textwrap.dedent(
+        """
+    from unittest import TestCase
+
+    import pytest
+
+    @pytest.mark.requires_salt_modules('ps', 'pstree')
+    class TestFoo(TestCase):
+
+        def test_one(self):
+            assert True
+    """
+    )
+    fpath = tempfiles.makepyfile(code, prefix="test_")
+    fix_requires_salt_modules_decorator.rewrite(fpath)
+    with open(fpath) as rfh:
+        new_code = rfh.read()
+    assert new_code == expected_code
+
+
+def test_multiple_decorators_same_order(tempfiles):
+    code = textwrap.dedent(
+        """
+    from unittest import TestCase
+    from tests.support.helpers import requires_salt_modules
+
+    @decorator1
+    @requires_salt_modules('ps', 'at')
+    @pytest.mark.requires_salt_states('blah')
+    class Test4(TestCase):
+
+        def test_one(self):
+            assert True
+    """
+    )
+    expected_code = textwrap.dedent(
+        """
+    from unittest import TestCase
+
+    import pytest
+
+    @decorator1
+    @pytest.mark.requires_salt_modules('ps', 'at')
+    @pytest.mark.requires_salt_states('blah')
+    class Test4(TestCase):
 
         def test_one(self):
             assert True

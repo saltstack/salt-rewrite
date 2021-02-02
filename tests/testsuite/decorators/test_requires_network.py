@@ -137,3 +137,40 @@ def test_keyword_arguments(tempfiles):
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
+
+
+def test_multiple_decorators_preserve_order(tempfiles):
+    code = textwrap.dedent(
+        """
+    from unittest import TestCase
+    from tests.support.helpers import requires_network
+
+    @decorator1
+    @requires_network(only_local_network=True)
+    @decorator2
+    class TestFoo(TestCase):
+
+        def test_one(self):
+            assert True
+    """
+    )
+    expected_code = textwrap.dedent(
+        """
+    from unittest import TestCase
+
+    import pytest
+
+    @decorator1
+    @pytest.mark.requires_network(only_local_network=True)
+    @decorator2
+    class TestFoo(TestCase):
+
+        def test_one(self):
+            assert True
+    """
+    )
+    fpath = tempfiles.makepyfile(code, prefix="test_")
+    fix_requires_network_decorator.rewrite(fpath)
+    with open(fpath) as rfh:
+        new_code = rfh.read()
+    assert new_code == expected_code

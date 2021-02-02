@@ -7,11 +7,14 @@
 """
 import os
 
+from bowler import SYMBOL
 from bowler import TOKEN
 from bowler.helpers import find_first
 from fissix import fixer_util
 from fissix import pygram
 from fissix.fixer_util import parenthesize
+from fissix.fixer_util import touch_import
+from fissix.pygram import python_symbols as syms
 from fissix.pytree import Leaf
 
 
@@ -141,3 +144,80 @@ def filter_test_files(paths):
             continue
         _paths.append(path)
     return _paths
+
+
+def get_decorator(node, decorator_name, marker):
+    """
+    Don't modify classes or test methods that aren't decorated with ``DECORATOR``
+    """
+    if node.parent.type == SYMBOL.decorated:
+        child = node.parent.children[0]
+        if child.type == SYMBOL.decorator:
+            decorators = [child]
+        elif child.type == SYMBOL.decorators:
+            decorators = child.children
+        else:
+            raise NotImplementedError
+        for decorator in decorators:
+            name = decorator.children[1]
+            assert name.type in {TOKEN.NAME, SYMBOL.dotted_name}
+
+            if str(name) in (decorator_name, marker):
+                return decorator
+
+
+def rewrite_decorator(node, decorator_name, marker):
+    """
+    Replaces usage of ``@<decorator_name>`` with ``@<marker>``
+    """
+    decorator = get_decorator(node, decorator_name, marker)
+
+    # pylint: disable=no-member
+
+    for leaf in decorator.children:
+        if leaf.type == TOKEN.AT:
+            continue
+        if leaf.type == TOKEN.NAME and leaf.value == decorator_name:
+            leaf.value = marker
+            continue
+        if leaf.type == syms.atom:
+            # This scenario is func(*args)
+            #
+            # Sometimes instead of passing expanded arguments 'foo(arg1, arg2)' a tuple or a
+            # list is passed as first argument 'foo([arg1, arg2])' or 'foo((arg1, arg2)).
+            # Let's break out of those containers.
+            break_out_of_atom = False
+            for atom_child in leaf.children:
+                if atom_child.type not in (syms.listmaker, syms.dictsetmaker, syms.testlist_gexp):
+                    atom_child.remove()
+                    continue
+                break_out_of_atom = True
+                break
+            if break_out_of_atom:
+                continue
+        elif leaf.type == syms.arglist:
+            # This scenario is func(*args, **kwargs)
+            #
+            for arg_child in leaf.children:
+                if arg_child.type == syms.atom:
+                    # Sometimes instead of passing expanded arguments 'foo(arg1, arg2)' a tuple or a
+                    # list is passed as first argument 'foo([arg1, arg2])' or 'foo((arg1, arg2)).
+                    # Let's break out of those containers.
+                    break_out_of_atom = False
+                    for atom_child in arg_child.children:
+                        if atom_child.type not in (
+                            syms.listmaker,
+                            syms.dictsetmaker,
+                            syms.testlist_gexp,
+                        ):
+                            atom_child.remove()
+                            continue
+                        break_out_of_atom = True
+                        break
+                    if break_out_of_atom:
+                        continue
+
+    # pylint: enable=no-member
+
+    touch_import(None, "pytest", node)
+    remove_from_import(node, "tests.support.helpers", decorator_name)
