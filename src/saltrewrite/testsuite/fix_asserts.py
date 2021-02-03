@@ -101,7 +101,7 @@ INVERT_FUNCTIONS = {
 BOOLEAN_VALUES = ("True", "False")
 
 
-def rewrite(paths):
+def rewrite(paths, interactive=False, silent=False):
     """
     Rewrite the passed in paths
     """
@@ -188,7 +188,7 @@ def rewrite(paths):
         .select_method("assertNotRegex")
         .modify(callback=handle_assert_regex)
         # Actually run all of the above.
-        .write()
+        .execute(write=True, interactive=interactive, silent=silent)
     )
 
 

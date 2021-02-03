@@ -14,7 +14,7 @@ MARKER = "pytest.mark.skip_if_binaries_missing"
 DECORATOR = "skip_if_binaries_missing"
 
 
-def rewrite(paths):
+def rewrite(paths, interactive=False, silent=False):
     """
     Rewrite the passed in paths
     """
@@ -27,7 +27,7 @@ def rewrite(paths):
         .select("classdef|funcdef")
         .filter(filter_not_decorated)
         .modify(replace_decorator)
-        .write()
+        .execute(write=True, interactive=interactive, silent=silent)
     )
 
 

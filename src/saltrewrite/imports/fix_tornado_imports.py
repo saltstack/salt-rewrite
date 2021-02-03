@@ -15,15 +15,21 @@ from fissix.pytree import Leaf
 from fissix.pytree import Node
 
 
-def rewrite(paths):
+def rewrite(paths, interactive=False, silent=False):
     """
     Rewrite the passed in paths
     """
-    query = Query(paths).select_module("tornado")
-    query = query.filter(filter_tornado_imports)
-    query.rename("salt.ext.tornado").select_root().select("classdef|funcdef").filter(
-        filter_not_decorated
-    ).modify(replace_decorators).write()
+    (
+        Query(paths)
+        .select_module("tornado")
+        .filter(filter_tornado_imports)
+        .rename("salt.ext.tornado")
+        .select_root()
+        .select("classdef|funcdef")
+        .filter(filter_not_decorated)
+        .modify(replace_decorators)
+        .execute(write=True, interactive=interactive, silent=silent)
+    )
 
 
 def filter_tornado_imports(node, capture, filename):

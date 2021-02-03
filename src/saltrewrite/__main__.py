@@ -25,6 +25,8 @@ except ImportError:
         readable=True,
     ),
 )
+@click.option("--silent/--no-silent", "-s/-S", is_flag=True, default=False)
+@click.option("--interactive/--no-interactive", "-i/-I", is_flag=True, default=False)
 @click.option("--list-fixes", "-l", is_flag=True)
 @click.option(
     "--exclude-fix",
@@ -33,7 +35,7 @@ except ImportError:
     multiple=True,
 )
 @click.version_option(version=version("salt-rewrite"))
-def rewrite(paths, list_fixes, exclude_fix):
+def rewrite(paths, interactive, silent, list_fixes, exclude_fix):
     """
     Main CLI entry-point
     """
@@ -47,7 +49,7 @@ def rewrite(paths, list_fixes, exclude_fix):
         Registry.fixes(exclude_fix), item_show_func=format_progress_bar
     ) as fixes:
         for _, module in fixes:
-            module.rewrite(paths)
+            module.rewrite(paths, interactive=interactive, silent=silent)
 
 
 def format_progress_bar(item):

@@ -14,7 +14,7 @@ MARKER = "pytest.mark.requires_salt_states"
 DECORATOR = "requires_salt_states"
 
 
-def rewrite(paths):
+def rewrite(paths, interactive=False, silent=False):
     """
     Rewrite the passed in paths
     """
@@ -27,7 +27,7 @@ def rewrite(paths):
         .select("classdef|funcdef")
         .filter(filter_not_decorated)
         .modify(replace_decorator)
-        .write()
+        .execute(write=True, interactive=interactive, silent=silent)
     )
 
 
