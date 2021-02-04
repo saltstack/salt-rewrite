@@ -27,11 +27,15 @@ class RegistryClass(object):
         )
         self.__fixes__ = OrderedDict(__sorted_fixes__)
 
-    def fixes(self, excluded_names=()):
+    def fixes(self, excluded_names=(), only_names=()):
         """
         Returns all available fixes, optionally skipping those passed in `excluded_names`
         """
         for name in self.__fixes__:
+            if only_names:
+                if name in only_names:
+                    yield name, self.__fixes__[name]
+                continue
             if name in excluded_names:
                 continue
             yield name, self.__fixes__[name]

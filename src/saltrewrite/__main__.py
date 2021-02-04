@@ -29,13 +29,19 @@ except ImportError:
 @click.option("--interactive/--no-interactive", "-i/-I", is_flag=True, default=False)
 @click.option("--list-fixes", "-l", is_flag=True)
 @click.option(
+    "-fix",
+    "-F",
+    type=click.Choice(Registry.fix_names(), case_sensitive=False),
+    multiple=True,
+)
+@click.option(
     "--exclude-fix",
     "-E",
     type=click.Choice(Registry.fix_names(), case_sensitive=False),
     multiple=True,
 )
 @click.version_option(version=version("salt-rewrite"))
-def rewrite(paths, interactive, silent, list_fixes, exclude_fix):
+def rewrite(paths, interactive, silent, list_fixes, fix, exclude_fix):
     """
     Main CLI entry-point
     """
@@ -45,8 +51,12 @@ def rewrite(paths, interactive, silent, list_fixes, exclude_fix):
         )
         return
 
+    if fix and exclude_fix:
+        raise click.UsageError("The --fix and --exclude-fix are mutually exclusive options")
+
     with click.progressbar(
-        Registry.fixes(exclude_fix), item_show_func=format_progress_bar
+        Registry.fixes(excluded_names=exclude_fix, only_names=fix),
+        item_show_func=format_progress_bar,
     ) as fixes:
         for _, module in fixes:
             module.rewrite(paths, interactive=interactive, silent=silent)
