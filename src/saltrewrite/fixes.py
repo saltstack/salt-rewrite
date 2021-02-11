@@ -9,6 +9,7 @@ import operator
 from collections import OrderedDict
 
 import saltrewrite.imports
+import saltrewrite.salt
 import saltrewrite.testsuite
 
 
@@ -20,7 +21,11 @@ class RegistryClass(object):
     __slots__ = ("__fixes__",)
 
     def __init__(self):
-        __fixes__ = saltrewrite.imports.__fixes__ + saltrewrite.testsuite.__fixes__
+        __fixes__ = (
+            saltrewrite.imports.__fixes__
+            + saltrewrite.testsuite.__fixes__
+            + saltrewrite.salt.__fixes__
+        )
         __sorted_fixes__ = (
             (module.__name__.split(".")[-1], module)
             for (priority, module) in sorted(__fixes__, key=operator.itemgetter(0))
