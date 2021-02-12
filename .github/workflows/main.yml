@@ -3,7 +3,7 @@ name: Tests
 on: [push, pull_request]
 
 jobs:
-  Linting:
+  Pre-Commit-Checks:
     runs-on: ubuntu-latest
 
     steps:
@@ -29,13 +29,12 @@ jobs:
       - name: Install dependencies
         run: |
           poetry install
-      - name: Linting
+      - name: Run pre-commit
         run: |
           pre-commit run --all-files
-          poetry run pylint src/ tests/
 
   Linux:
-    needs: Linting
+    needs: Pre-Commit-Checks
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -86,7 +85,7 @@ jobs:
         fail_ci_if_error: true #optional (default = false)
 
   macOS:
-    needs: Linting
+    needs: Pre-Commit-Checks
     runs-on: macos-latest
     strategy:
       matrix:
@@ -139,7 +138,7 @@ jobs:
         fail_ci_if_error: true #optional (default = false)
 
 #  Windows:
-#    needs: Linting
+#    needs: Pre-Commit-Checks
 #    runs-on: windows-latest
 #    strategy:
 #      matrix:
