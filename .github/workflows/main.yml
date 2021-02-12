@@ -16,22 +16,20 @@ jobs:
         id: full-python-version
         run: |
           echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
-      - name: Install Dependencies
-        run: |
-          pip install pre-commit
-          pip install poetry
-          poetry config virtualenvs.in-project true
       - name: Set up cache
         uses: actions/cache@v1
         with:
           path: .venv
           key: venv-${{ runner.os }}-lint-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
-      - name: Install dependencies
+      - name: Install Package dependencies
         run: |
-          poetry install
+          pip install pre-commit
+          pip install poetry
+          poetry config virtualenvs.in-project true
+          poetry install -v
       - name: Run pre-commit
         run: |
-          pre-commit run --all-files
+          pre-commit run --all-files --verbose
 
   Linux:
     needs: Pre-Commit-Checks
