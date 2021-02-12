@@ -29,7 +29,7 @@ jobs:
           poetry install -v
       - name: Run pre-commit
         run: |
-          pre-commit run --all-files --verbose
+          poetry run pre-commit run --all-files --verbose
 
   Linux:
     needs: Pre-Commit-Checks
