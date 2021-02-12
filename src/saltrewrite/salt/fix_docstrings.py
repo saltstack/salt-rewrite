@@ -80,10 +80,14 @@ def fix_module_docstrings(node, capture, filename):
     """
     Automaticaly run fixes against docstrings
     """
+    # Replace the docstring Leaf value with a fixed docstring
     capture["docstring"][0].value = autofix_docstring(capture["docstring"][0].value, filename)
 
 
 def autofix_docstring(docstring, filename):
+    """
+    Run auto fix code against the docstring
+    """
     return _convert_version_names_to_numbers(
         _fix_codeblocks(
             _fix_directives_formatting(
@@ -109,16 +113,16 @@ def _convert_version_names_to_numbers(docstring, filename):
         version = match.group("version")
         versions = [vs.strip() for vs in version.split(",")]
         parsed_versions = []
-        for vs in versions:
+        for version in versions:
             try:
-                vs = SaltStackVersion.from_name(vs).string
+                version = SaltStackVersion.from_name(version).string
             except ValueError:
-                if vs.startswith("v"):
+                if version.startswith("v"):
                     try:
-                        vs = SaltStackVersion.parse(vs[1:]).string
+                        version = SaltStackVersion.parse(version[1:]).string
                     except ValueError:
                         pass
-            parsed_versions.append(vs)
+            parsed_versions.append(version)
         replace_contents = ".. {}:: {}".format(vtype, ", ".join(parsed_versions))
         docstring = docstring.replace(match.group(0), replace_contents.rstrip())
     return docstring
@@ -144,7 +148,9 @@ def _fix_simple_cli_example_spacing_issues(docstring, filename):
 
 
 DIRECTIVES_FORMATTING_RE = re.compile(
-    r"(\n(?P<spc1>[ ]+)?((?P<dots>[.]{2,})(?P<spc2>[ ]+)?(?P<directive>(?:[^ :]+)))(?:[:]{2})(?P<spc3>[ ]+)?(?P<remaining>[^\n]+)?\n)"
+    r"(\n(?P<spc1>[ ]+)?((?P<dots>[.]{2,})(?P<spc2>[ ]+)?"
+    r"(?P<directive>(?:[^ :]+)))(?:[:]{2})(?P<spc3>[ ]+)?"
+    r"(?P<remaining>[^\n]+)?\n)"
 )
 
 
@@ -193,6 +199,7 @@ def _fix_codeblocks(docstring, filename):
     return "".join(output)
 
 
+# pylint: disable=missing-function-docstring
 class SaltStackVersion:
     """
     This is a copy of SaltStackVersion from salt/version.py
@@ -655,3 +662,6 @@ class SaltStackVersion:
         if noc and self.sha:
             parts.extend(["noc={}".format(noc), "sha={}".format(self.sha)])
         return "<{} {}>".format(self.__class__.__name__, " ".join(parts))
+
+
+# pylint: enable=missing-function-docstring
