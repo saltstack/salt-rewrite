@@ -123,6 +123,9 @@ def test_fix_versionadded(tempfiles, vtype):
         One was a function like:
 
         ..{}: Neon
+
+        Returns {{deprecated: true}} if the thing type was deprecated and returns
+        {{deprecated: false}} if the thing type was not deprecated.
         '''
         print("one")
     """.format(
@@ -136,6 +139,9 @@ def test_fix_versionadded(tempfiles, vtype):
         One was a function like:
 
         .. {}:: 3000
+
+        Returns {{deprecated: true}} if the thing type was deprecated and returns
+        {{deprecated: false}} if the thing type was not deprecated.
         '''
         print("one")
     """.format(

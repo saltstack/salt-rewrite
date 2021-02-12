@@ -89,7 +89,7 @@ def autofix_docstring(docstring, filename):
 
 
 CONVERT_VERSION_NAMES_TO_NUMBERS_RE = re.compile(
-    r"..(?:[ ]*)?((?P<vtype>(versionadded|versionchanged|deprecated))(?:[:]+)(?:[ ]+)?(?P<version>[^\n]*))"
+    r"\.\.(?:[ ]*)?((?P<vtype>(versionadded|versionchanged|deprecated))(?:[:]+)(?:[ ]+)?(?P<version>[^\n]*))"
 )
 
 
