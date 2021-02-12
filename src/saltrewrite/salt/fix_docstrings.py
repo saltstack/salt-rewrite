@@ -8,6 +8,7 @@
 import re
 
 from bowler import Query
+from bowler import TOKEN
 
 
 def rewrite(paths, interactive=False, silent=False):
@@ -65,8 +66,14 @@ def filter_no_module_docstrings(node, capture, filename):
     """
     If the first child is a docstring, process it
     """
-    if "docstring" in capture:
-        return node
+    if "docstring" not in capture:
+        # Docstring was not captured, ignore
+        return
+    if capture["docstring"][0].type != TOKEN.STRING:
+        # It's not a docstring, return
+        return
+    # Process node
+    return node
 
 
 def fix_module_docstrings(node, capture, filename):

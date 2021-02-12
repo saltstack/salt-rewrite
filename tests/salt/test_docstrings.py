@@ -188,3 +188,150 @@ def test_fix_versionadded_multiple(tempfiles, vtype):
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == expected_code
+
+
+@pytest.mark.parametrize("vtype", ["versionadded", "versionchanged", "deprecated"])
+def test_fix_versionadded_module_docstring(tempfiles, vtype):
+    code = textwrap.dedent(
+        """
+    # -*- coding: utf-8 -*-
+    '''
+    New module blah
+
+    ..{}:Neon,3001
+    '''
+
+    def one():
+        '''
+        One function
+        '''
+        print("one")
+    """.format(
+            vtype
+        )
+    )
+    expected_code = textwrap.dedent(
+        """
+    # -*- coding: utf-8 -*-
+    '''
+    New module blah
+
+    .. {}:: 3000, 3001
+    '''
+
+    def one():
+        '''
+        One function
+        '''
+        print("one")
+    """.format(
+            vtype
+        )
+    )
+    fpath = tempfiles.makepyfile(code, prefix="test_")
+    fix_docstrings.rewrite(fpath)
+    with open(fpath) as rfh:
+        new_code = rfh.read()
+    assert new_code == expected_code
+
+
+def test_global_scoped_variables_with_docstring(tempfiles):
+    code = textwrap.dedent(
+        """
+    '''
+    Blah Module docstring
+    '''
+
+    HAS_LIB = False
+    try:
+        import it
+    except ImportError:
+        HAS_LIB = False
+
+    def one():
+        '''
+        One was a function like:
+
+        ..code-block::python
+            one()
+
+        '''
+        print("one")
+    """
+    )
+    expected_code = textwrap.dedent(
+        """
+    '''
+    Blah Module docstring
+    '''
+
+    HAS_LIB = False
+    try:
+        import it
+    except ImportError:
+        HAS_LIB = False
+
+    def one():
+        '''
+        One was a function like:
+
+        .. code-block:: python
+
+            one()
+
+        '''
+        print("one")
+    """
+    )
+    fpath = tempfiles.makepyfile(code, prefix="test_")
+    fix_docstrings.rewrite(fpath)
+    with open(fpath) as rfh:
+        new_code = rfh.read()
+    assert new_code == expected_code
+
+
+def test_global_scoped_variables_without_docstring(tempfiles):
+    code = textwrap.dedent(
+        """
+    HAS_LIB = False
+    try:
+        import it
+    except ImportError:
+        HAS_LIB = False
+
+    def one():
+        '''
+        One was a function like:
+
+        ..code-block::python
+            one()
+
+        '''
+        print("one")
+    """
+    )
+    expected_code = textwrap.dedent(
+        """
+    HAS_LIB = False
+    try:
+        import it
+    except ImportError:
+        HAS_LIB = False
+
+    def one():
+        '''
+        One was a function like:
+
+        .. code-block:: python
+
+            one()
+
+        '''
+        print("one")
+    """
+    )
+    fpath = tempfiles.makepyfile(code, prefix="test_")
+    fix_docstrings.rewrite(fpath)
+    with open(fpath) as rfh:
+        new_code = rfh.read()
+    assert new_code == expected_code
