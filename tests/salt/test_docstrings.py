@@ -176,7 +176,7 @@ def test_fix_versionadded_multiple(tempfiles, vtype):
         '''
         One was a function like:
 
-        .. {}:: 3000, 3001
+        .. {}:: 3000,3001
         '''
         print("one")
     """.format(
@@ -216,7 +216,7 @@ def test_fix_versionadded_module_docstring(tempfiles, vtype):
     '''
     New module blah
 
-    .. {}:: 3000, 3001
+    .. {}:: 3000,3001
     '''
 
     def one():

@@ -123,7 +123,7 @@ def _convert_version_names_to_numbers(docstring, filename):
                     except ValueError:
                         pass
             parsed_versions.append(version)
-        replace_contents = ".. {}:: {}".format(vtype, ", ".join(parsed_versions))
+        replace_contents = ".. {}:: {}".format(vtype, ",".join(parsed_versions))
         docstring = docstring.replace(match.group(0), replace_contents.rstrip())
     return docstring
 
