@@ -7,9 +7,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Set up Python 3.6
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
           python-version: 3.6
       - name: Get full python version
@@ -17,7 +17,7 @@ jobs:
         run: |
           echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
       - name: Set up cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: .venv
           key: venv-${{ runner.os }}-lint-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
@@ -34,14 +34,16 @@ jobs:
   Linux:
     needs: Pre-Commit-Checks
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
+      max-parallel: 3
       matrix:
         python-version: [3.6, 3.7, 3.8]
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
     - name: Get full python version
@@ -53,7 +55,7 @@ jobs:
         pip install poetry
         poetry config virtualenvs.in-project true
     - name: Set up cache
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: .venv
         key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
@@ -68,31 +70,68 @@ jobs:
         poetry run coverage xml
 
     - name: Build CodeCov Flags
-      id: codecov-flags
+      id: codecov-info
       run: |
         echo ::set-output name=py_version::$(python -c "import sys; print('py{}{}'.format(*sys.version_info))")
+        echo ::set-output name=uploader-url::$(python -c "print('https://uploader.codecov.io/latest/codecov-linux')")
 
     - name: Upload Code Coverage
-      uses: codecov/codecov-action@v1
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        #file: ./coverage.xml #optional
-        flags: linux,${{ steps.codecov-flags.outputs.py_version }}
-        name: Linux-Py${{ matrix.python-version }} #optional
-        #yml: ./codecov.yml #optional
-        fail_ci_if_error: true #optional (default = false)
+      if: always()
+      shell: bash
+      env:
+        REPORT_FLAGS: linux,${{ steps.codecov-info.outputs.py_version }}
+        REPORT_NAME: linux-${{ steps.codecov-info.outputs.py_version }}
+        REPORT_PATH: coverage.xml
+      run: |
+        if [ ! -f codecov-uploader ]; then
+            n=0
+            until [ "$n" -ge 5 ]
+            do
+            if curl --max-time 30 -L ${{ steps.codecov-info.outputs.uploader-url }} --output codecov-uploader; then
+                rc=$?
+                break
+            fi
+            rc=$?
+            n=$((n+1))
+            sleep 15
+            done
+        fi
+        if [ $rc -ne 0 ]; then
+            echo "Failed to download uploader"
+            exit 1
+        fi
+        if [ -f codecov-uploader ]; then
+            chmod +x codecov-uploader
+            n=0
+            until [ "$n" -ge 5 ]
+            do
+            if ./codecov-uploader -R $(pwd) -n "${REPORT_NAME}" -f "${REPORT_PATH}" -F "${REPORT_FLAGS}"; then
+                rc=$?
+                break
+            fi
+            rc=$?
+            n=$((n+1))
+            sleep 15
+            done
+        fi
+        if [ $rc -ne 0 ]; then
+            echo "Failed to upload codecov stats"
+            exit 1
+        fi
 
   macOS:
     needs: Pre-Commit-Checks
     runs-on: macos-latest
+    timeout-minutes: 10
     strategy:
+      max-parallel: 3
       matrix:
         python-version: [3.6, 3.7, 3.8]
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
     - name: Get full python version
@@ -104,7 +143,7 @@ jobs:
         pip install poetry
         poetry config virtualenvs.in-project true
     - name: Set up cache
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: .venv
         key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
@@ -121,50 +160,140 @@ jobs:
         poetry run coverage xml
 
     - name: Build CodeCov Flags
-      id: codecov-flags
+      id: codecov-info
       run: |
         echo ::set-output name=py_version::$(python -c "import sys; print('py{}{}'.format(*sys.version_info))")
+        echo ::set-output name=uploader-url::$(python -c "print('https://uploader.codecov.io/latest/codecov-macos')")
 
     - name: Upload Code Coverage
-      uses: codecov/codecov-action@v1
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        #file: ./coverage.xml #optional
-        flags: macos,${{ steps.codecov-flags.outputs.py_version }}
-        name: macOS-Py${{ matrix.python-version }} #optional
-        #yml: ./codecov.yml #optional
-        fail_ci_if_error: true #optional (default = false)
+      if: always()
+      shell: bash
+      env:
+        REPORT_FLAGS: macos,${{ steps.codecov-info.outputs.py_version }}
+        REPORT_NAME: macos-${{ steps.codecov-info.outputs.py_version }}
+        REPORT_PATH: coverage.xml
+      run: |
+        if [ ! -f codecov-uploader ]; then
+            n=0
+            until [ "$n" -ge 5 ]
+            do
+            if curl --max-time 30 -L ${{ steps.codecov-info.outputs.uploader-url }} --output codecov-uploader; then
+                rc=$?
+                break
+            fi
+            rc=$?
+            n=$((n+1))
+            sleep 15
+            done
+        fi
+        if [ $rc -ne 0 ]; then
+            echo "Failed to download uploader"
+            exit 1
+        fi
+        if [ -f codecov-uploader ]; then
+            chmod +x codecov-uploader
+            n=0
+            until [ "$n" -ge 5 ]
+            do
+            if ./codecov-uploader -R $(pwd) -n "${REPORT_NAME}" -f "${REPORT_PATH}" -F "${REPORT_FLAGS}"; then
+                rc=$?
+                break
+            fi
+            rc=$?
+            n=$((n+1))
+            sleep 15
+            done
+        fi
+        if [ $rc -ne 0 ]; then
+            echo "Failed to upload codecov stats"
+            exit 1
+        fi
 
-#  Windows:
-#    needs: Pre-Commit-Checks
-#    runs-on: windows-latest
-#    strategy:
-#      matrix:
-#        python-version: [3.6, 3.7, 3.8]
-#
-#    steps:
-#    - uses: actions/checkout@v1
-#    - name: Set up Python ${{ matrix.python-version }}
-#      uses: actions/setup-python@v1
-#      with:
-#        python-version: ${{ matrix.python-version }}
-#    - name: Get full python version
-#      id: full-python-version
-#      shell: bash
-#      run: |
-#        echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
-#    - name: Install and setup Poetry
-#      run: |
-#        pip install poetry
-#        poetry config virtualenvs.in-project true
-#    - name: Set up cache
-#      uses: actions/cache@v1
-#      with:
-#        path: .venv
-#        key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
-#    - name: Install dependencies
-#      run: |
-#        poetry install
-#    - name: Test
-#      run: |
-#        poetry run pytest -q tests
+  Windows:
+    needs: Pre-Commit-Checks
+    runs-on: windows-latest
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 3
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Get full python version
+      id: full-python-version
+      run: |
+        echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
+    - name: Install and set up Poetry
+      run: |
+        pip install poetry
+        poetry config virtualenvs.in-project true
+    - name: Set up cache
+      uses: actions/cache@v2
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+    - name: Install dependencies
+      run: |
+        poetry install
+    - name: Test
+      run: |
+        poetry run coverage run -m pytest -q tests
+        poetry run coverage combine
+        poetry run coverage report --fail-under=50 --show-missing
+        poetry run coverage xml
+
+    - name: Build CodeCov Flags
+      id: codecov-info
+      shell: bash
+      run: |
+        echo ::set-output name=py_version::$(python -c "import sys; print('py{}{}'.format(*sys.version_info))")
+        echo ::set-output name=uploader-url::$(python -c "print('https://uploader.codecov.io/latest/codecov.exe')")
+
+    - name: Upload Code Coverage
+      if: always()
+      shell: bash
+      env:
+        REPORT_FLAGS: windows,${{ steps.codecov-info.outputs.py_version }}
+        REPORT_NAME: windows-${{ steps.codecov-info.outputs.py_version }}
+        REPORT_PATH: coverage.xml
+      run: |
+        if [ ! -f codecov-uploader ]; then
+            n=0
+            until [ "$n" -ge 5 ]
+            do
+            if curl --max-time 30 -L ${{ steps.codecov-info.outputs.uploader-url }} --output codecov-uploader; then
+                rc=$?
+                break
+            fi
+            rc=$?
+            n=$((n+1))
+            sleep 15
+            done
+        fi
+        if [ $rc -ne 0 ]; then
+            echo "Failed to download uploader"
+            exit 1
+        fi
+        if [ -f codecov-uploader ]; then
+            chmod +x codecov-uploader
+            n=0
+            until [ "$n" -ge 5 ]
+            do
+            if ./codecov-uploader -R $(pwd) -n "${REPORT_NAME}" -f "${REPORT_PATH}" -F "${REPORT_FLAGS}"; then
+                rc=$?
+                break
+            fi
+            rc=$?
+            n=$((n+1))
+            sleep 15
+            done
+        fi
+        if [ $rc -ne 0 ]; then
+            echo "Failed to upload codecov stats"
+            exit 1
+        fi
