@@ -1299,9 +1299,9 @@ def test_assert_raises(tempfiles):
 
         def test_one(self):
             with self.assertRaises(ZeroDivision):
-                0/1
+                1/0
             with self.assertRaises(ZeroDivision) as excinfo:
-                0/1
+                1/0
             self.assertRaises(CommandExecutionError, self._kernelpkg.remove, release=1)
     """
     )
@@ -1314,9 +1314,9 @@ def test_assert_raises(tempfiles):
 
         def test_one(self):
             with pytest.raises(ZeroDivision):
-                0/1
+                1/0
             with pytest.raises(ZeroDivision) as excinfo:
-                0/1
+                1/0
             pytest.raises(CommandExecutionError, self._kernelpkg.remove, release=1)
     """
     )
@@ -1336,9 +1336,9 @@ def test_assert_raises_with_message(tempfiles):
 
         def test_one(self):
             with self.assertRaises(ZeroDivision, msg='Blah!'):
-                0/1
+                1/0
             with self.assertRaises(ZeroDivision, msg='Blah!') as excinfo:
-                0/1
+                1/0
             self.assertRaises(CommandExecutionError, self._kernelpkg.remove, release=1, msg='Blah!')
     """
     )
@@ -1351,10 +1351,138 @@ def test_assert_raises_with_message(tempfiles):
 
         def test_one(self):
             with pytest.raises(ZeroDivision):
-                0/1
+                1/0
             with pytest.raises(ZeroDivision) as excinfo:
-                0/1
+                1/0
             pytest.raises(CommandExecutionError, self._kernelpkg.remove, release=1)
+    """
+    )
+    fpath = tempfiles.makepyfile(code, prefix="test_")
+    fix_asserts.rewrite(fpath)
+    with open(fpath) as rfh:
+        new_code = rfh.read()
+    assert new_code == expected_code
+
+
+def test_assert_raises_regex_with_statement(tempfiles):
+    code = textwrap.dedent(
+        """
+    from unittest import TestCase
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            with self.assertRaisesRegex(ZeroDivision, "division by zero"):
+                1/0
+            with self.assertRaisesRegex(ZeroDivision, "division by zero") as excinfo:
+                1/0
+    """
+    )
+    expected_code = textwrap.dedent(
+        """
+    from unittest import TestCase
+    import pytest
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            with pytest.raises(ZeroDivision, match="division by zero"):
+                1/0
+            with pytest.raises(ZeroDivision, match="division by zero") as excinfo:
+                1/0
+    """
+    )
+    fpath = tempfiles.makepyfile(code, prefix="test_")
+    fix_asserts.rewrite(fpath)
+    with open(fpath) as rfh:
+        new_code = rfh.read()
+    assert new_code == expected_code
+
+
+def test_assert_raises_regex_call(tempfiles):
+    code = textwrap.dedent(
+        """
+    from unittest import TestCase
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            self.assertRaisesRegex(CommandExecutionError, "error match", self._kernelpkg.remove, release=1)
+    """
+    )
+    expected_code = textwrap.dedent(
+        """
+    from unittest import TestCase
+    import pytest
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            pytest.raises(CommandExecutionError, self._kernelpkg.remove, release=1, match="error match")
+    """
+    )
+    fpath = tempfiles.makepyfile(code, prefix="test_")
+    fix_asserts.rewrite(fpath)
+    with open(fpath) as rfh:
+        new_code = rfh.read()
+    assert new_code == expected_code
+
+
+def test_assert_raises_regex_with_message_with_statement(tempfiles):
+    code = textwrap.dedent(
+        """
+    from unittest import TestCase
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            with self.assertRaisesRegex(ZeroDivision, "division by zero", msg='Blah!'):
+                1/0
+            with self.assertRaisesRegex(ZeroDivision, "division by zero", msg='Blah!') as excinfo:
+                1/0
+    """
+    )
+    expected_code = textwrap.dedent(
+        """
+    from unittest import TestCase
+    import pytest
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            with pytest.raises(ZeroDivision, match="division by zero"):
+                1/0
+            with pytest.raises(ZeroDivision, match="division by zero") as excinfo:
+                1/0
+    """
+    )
+    fpath = tempfiles.makepyfile(code, prefix="test_")
+    fix_asserts.rewrite(fpath)
+    with open(fpath) as rfh:
+        new_code = rfh.read()
+    assert new_code == expected_code
+
+
+def test_assert_raises_regex_with_message_call(tempfiles):
+    code = textwrap.dedent(
+        """
+    from unittest import TestCase
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            self.assertRaisesRegex(CommandExecutionError, self._kernelpkg.remove, release=1, match="error match")
+    """
+    )
+    expected_code = textwrap.dedent(
+        """
+    from unittest import TestCase
+    import pytest
+
+    class TestMe(TestCase):
+
+        def test_one(self):
+            pytest.raises(CommandExecutionError, self._kernelpkg.remove, release=1, match="error match")
     """
     )
     fpath = tempfiles.makepyfile(code, prefix="test_")

@@ -183,6 +183,15 @@ def rewrite(paths, interactive=False, silent=False):
         """
         )
         .modify(callback=handle_assertraises)
+        .select(
+            """
+            function_call=power<
+                self_attr="self" raises_attr=trailer< "." "assertRaisesRegex" >
+                trailer< '(' function_arguments=any* ')' >
+            >
+        """
+        )
+        .modify(callback=handle_assertraises_regex)
         .select_method("assertRegex")
         .modify(callback=handle_assert_regex)
         .select_method("assertNotRegex")
@@ -452,7 +461,7 @@ def handle_assertraises(node, capture, arguments):
             if tchild.type != syms.arglist:
                 continue
             previous_argument = None
-            for argument in tchild.children:
+            for argument in list(tchild.children):
                 if isinstance(argument, Leaf):
                     previous_argument = argument
                     continue
@@ -466,6 +475,87 @@ def handle_assertraises(node, capture, arguments):
                             if previous_argument.value == ",":
                                 # previous_argument is a comma, remove it.
                                 previous_argument.remove()
+
+    # Adds a 'import pytest' if there wasn't one already
+    touch_import(None, "pytest", node)
+
+
+@conversion
+def handle_assertraises_regex(node, capture, arguments):
+    """
+    with self.assertRaisesRegex(x, "regex match"):
+
+        --> with pytest.raises(x, match="regex match"):
+
+    self.assertRaises(ValueError, "regex match", func, arg1)
+
+        --> pytest.raises(ValueError, func, arg1, match="regex match")
+    """
+    capture["self_attr"].replace(keyword("pytest", prefix=capture["self_attr"].prefix))
+    capture["raises_attr"].replace(Node(syms.trailer, [Dot(), keyword("raises", prefix="")]))
+    # Let's remove the msg= keyword argument if found and replace the second argument
+    # with a match keyword argument
+    regex_match = None
+    for child in node.children:
+        if child.type != syms.trailer:
+            continue
+        for tchild in child.children:
+            if tchild.type != syms.arglist:
+                continue
+            previous_argument = None
+            argnum = 0
+            for argument in list(tchild.children):
+                if isinstance(argument, Leaf):
+                    if argument.value != ",":
+                        argnum += 1
+                    else:
+                        previous_argument = argument
+                        continue
+
+                    if argnum != 2:
+                        previous_argument = argument
+                        continue
+
+                    if argnum == 2:
+                        regex_match = Node(
+                            syms.argument,
+                            [
+                                Leaf(TOKEN.NAME, "match"),
+                                Leaf(TOKEN.EQUAL, "="),
+                                Leaf(TOKEN.STRING, argument.value),
+                            ],
+                            prefix=" ",
+                        )
+                        argument.remove()
+                        if previous_argument and previous_argument.value == ",":
+                            previous_argument.remove()
+                        previous_argument = None
+                        continue
+                if isinstance(argument, Node):
+                    if argument.type != syms.argument:
+                        previous_argument = argument
+                        continue
+                    for leaf in argument.leaves():
+                        if leaf.value == "msg":
+                            argument.remove()
+                            if previous_argument and previous_argument.value == ",":
+                                # previous_argument is a comma, remove it.
+                                previous_argument.remove()
+
+    if regex_match:
+        regex_match_added = False
+        for child in node.children:
+            if regex_match_added:
+                break
+            if child.type != syms.trailer:
+                continue
+            for tchild in child.children:
+                if tchild.type != syms.arglist:
+                    continue
+                tchild.children.append(Leaf(TOKEN.COMMA, ","))
+                tchild.children.append(regex_match)
+                regex_match_added = True
+                break
 
     # Adds a 'import pytest' if there wasn't one already
     touch_import(None, "pytest", node)
