@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     saltrewrite.testsuite.fix_skip_if_not_root_decorator
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

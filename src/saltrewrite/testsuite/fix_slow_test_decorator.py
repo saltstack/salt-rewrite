@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     saltrewrite.testsuite.fix_slow_test_decorator
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

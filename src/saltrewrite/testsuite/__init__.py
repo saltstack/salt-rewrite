@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # pylint: disable=missing-module-docstring
 from saltrewrite.testsuite import fix_asserts
 from saltrewrite.testsuite import fix_destructive_test_decorator

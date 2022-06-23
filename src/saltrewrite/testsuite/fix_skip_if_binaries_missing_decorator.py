@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     saltrewrite.testsuite.fix_skip_if_binaries_missing_decorator
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

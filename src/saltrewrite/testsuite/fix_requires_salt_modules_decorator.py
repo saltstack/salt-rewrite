@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     saltrewrite.testsuite.fix_requires_salt_modules_decorator
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

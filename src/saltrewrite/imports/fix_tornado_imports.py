@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     saltrewrite.imports.fix_tornado_imports
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -93,7 +92,7 @@ def replace_decorators(node, capture, filename):
                 SYMBOL.decorator,
                 [
                     Leaf(TOKEN.AT, "@"),
-                    Name("salt.ext.{}".format(get_decorator_name(decorator))),
+                    Name(f"salt.ext.{get_decorator_name(decorator)}"),
                     Leaf(TOKEN.NEWLINE, "\n"),
                 ],
             )

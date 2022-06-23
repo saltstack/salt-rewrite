@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     saltrewrite.fixes
     ~~~~~~~~~~~~~~~~~
@@ -13,7 +12,7 @@ import saltrewrite.salt
 import saltrewrite.testsuite
 
 
-class RegistryClass(object):
+class RegistryClass:
     """
     Registry class to hold all available fixes
     """

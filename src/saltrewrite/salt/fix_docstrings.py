@@ -1,10 +1,10 @@
-# -*- coding: utf-8 -*-
 """
     saltrewrite.salt.fix_docstrings
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     @todo: add description
 """
+# pylint: disable=consider-using-f-string
 import re
 
 from bowler import Query
@@ -448,13 +448,13 @@ class SaltStackVersion:
         vstr = version_string.decode() if isinstance(version_string, bytes) else version_string
         match = cls.git_describe_regex.match(vstr)
         if not match:
-            raise ValueError("Unable to parse version string: '{}'".format(version_string))
+            raise ValueError(f"Unable to parse version string: '{version_string}'")
         return cls(*match.groups())
 
     @classmethod
     def from_name(cls, name):
         if name.lower() not in cls.LNAMES:
-            raise ValueError("Named version '{}' is not known".format(name))
+            raise ValueError(f"Named version '{name}' is not known")
         return cls(*cls.LNAMES[name.lower()])
 
     @classmethod
@@ -462,11 +462,9 @@ class SaltStackVersion:
         return cls.from_name(
             cls.VNAMES[
                 max(
-                    [
-                        version_info
-                        for version_info in cls.VNAMES
-                        if version_info[0] < cls.NAMES["Oganesson"][0]
-                    ]
+                    version_info
+                    for version_info in cls.VNAMES
+                    if version_info[0] < cls.NAMES["Oganesson"][0]
                 )
             ]
         )
@@ -476,11 +474,9 @@ class SaltStackVersion:
         return cls.from_name(
             cls.VNAMES[
                 min(
-                    [
-                        version_info
-                        for version_info in cls.VNAMES
-                        if version_info > cls.from_last_named_version().info
-                    ]
+                    version_info
+                    for version_info in cls.VNAMES
+                    if version_info > cls.from_last_named_version().info
                 )
             ]
         )
@@ -543,20 +539,20 @@ class SaltStackVersion:
     @property
     def string(self):
         if self.new_version(self.major):
-            version_string = "{}".format(self.major)
+            version_string = f"{self.major}"
             if self.minor:
-                version_string = "{}.{}".format(self.major, self.minor)
+                version_string = f"{self.major}.{self.minor}"
         else:
-            version_string = "{}.{}.{}".format(self.major, self.minor, self.bugfix)
+            version_string = f"{self.major}.{self.minor}.{self.bugfix}"
         if self.mbugfix:
-            version_string += ".{}".format(self.mbugfix)
+            version_string += f".{self.mbugfix}"
         if self.pre_type:
-            version_string += "{}{}".format(self.pre_type, self.pre_num)
+            version_string += f"{self.pre_type}{self.pre_num}"
         if self.noc and self.sha:
             noc = self.noc
             if noc < 0:
                 noc = "0na"
-            version_string += "+{}.{}".format(noc, self.sha)
+            version_string += f"+{noc}.{self.sha}"
         return version_string
 
     @property
@@ -571,7 +567,7 @@ class SaltStackVersion:
         if self.sse:
             version_string += " Enterprise"
         if (self.major, self.minor) in self.RMATCH:
-            version_string += " ({})".format(self.RMATCH[(self.major, self.minor)])
+            version_string += f" ({self.RMATCH[(self.major, self.minor)]})"
         return version_string
 
     @property
@@ -594,7 +590,7 @@ class SaltStackVersion:
             elif isinstance(other, (list, tuple)):
                 other = SaltStackVersion(*other)
             else:
-                raise ValueError("Cannot instantiate Version from type '{}'".format(type(other)))
+                raise ValueError(f"Cannot instantiate Version from type '{type(other)}'")
 
         pre_type = self.pre_index
         other_pre_type = other.pre_index
@@ -643,24 +639,24 @@ class SaltStackVersion:
     def __repr__(self):
         parts = []
         if self.name:
-            parts.append("name='{}'".format(self.name))
-        parts.extend(["major={}".format(self.major), "minor={}".format(self.minor)])
+            parts.append(f"name='{self.name}'")
+        parts.extend([f"major={self.major}", f"minor={self.minor}"])
 
         if self.new_version(self.major):
             if not self.minor:
                 parts.remove("".join([x for x in parts if re.search("^minor*", x)]))
         else:
-            parts.extend(["bugfix={}".format(self.bugfix)])
+            parts.extend([f"bugfix={self.bugfix}"])
 
         if self.mbugfix:
-            parts.append("minor-bugfix={}".format(self.mbugfix))
+            parts.append(f"minor-bugfix={self.mbugfix}")
         if self.pre_type:
-            parts.append("{}={}".format(self.pre_type, self.pre_num))
+            parts.append(f"{self.pre_type}={self.pre_num}")
         noc = self.noc
         if noc == -1:
             noc = "0na"
         if noc and self.sha:
-            parts.extend(["noc={}".format(noc), "sha={}".format(self.sha)])
+            parts.extend([f"noc={noc}", f"sha={self.sha}"])
         return "<{} {}>".format(self.__class__.__name__, " ".join(parts))
 
 

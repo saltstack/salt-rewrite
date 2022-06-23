@@ -1,4 +1,4 @@
-# pylint: disable=missing-module-docstring,missing-function-docstring,too-many-lines
+# pylint: disable=missing-module-docstring,missing-function-docstring,too-many-lines,consider-using-f-string
 import textwrap
 
 import pytest

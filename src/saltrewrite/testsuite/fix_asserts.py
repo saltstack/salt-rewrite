@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     saltrewrite.testsuite.fix_asserts
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -405,7 +404,7 @@ def assertalmostequal_to_assert(node, capture, arguments):
             except (ValueError, AttributeError):
                 # this should be an int, give up.
                 return
-        abs_delta = "1e-%d" % places
+        abs_delta = "1e-%d" % places  # pylint: disable=consider-using-f-string
 
     arguments[1].prefix = ""
     if invert:

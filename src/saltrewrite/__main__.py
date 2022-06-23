@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     saltrewrite.cli
     ~~~~~~~~~~~~~~~
@@ -46,9 +45,7 @@ def rewrite(paths, interactive, silent, list_fixes, fix, exclude_fix):
     Main CLI entry-point
     """
     if list_fixes:
-        click.echo(
-            "Fixes:\n{}".format("\n".join(" - {}".format(fix) for fix in Registry.fix_names()))
-        )
+        click.echo("Fixes:\n{}".format("\n".join(f" - {fix}" for fix in Registry.fix_names())))
         return
 
     if fix and exclude_fix:
@@ -67,4 +64,4 @@ def format_progress_bar(item):
     Format a progress bar item
     """
     if item is not None:
-        return "Processing {}".format(item[0])
+        return f"Processing {item[0]}"
