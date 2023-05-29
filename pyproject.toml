@@ -12,7 +12,7 @@ packages = [
 "salt-rewrite" = "saltrewrite.__main__:rewrite"
 
 [tool.poetry.dependencies]
-python = ">=3.6.1"
+python = ">=3.7"
 bowler = ">= 0.9.0"
 fissix = {version = "^19.2b1", allow-prereleases = true}
 importlib_metadata = {version = "*", python="<3.8"}
@@ -22,6 +22,7 @@ pytest = ">= 5.3.4"
 pylint = "^2.4.4"
 pre-commit = "^2.17.0"
 coverage = "^5.0.3"
+twine = "^4.0.2"
 
 [build-system]
 requires = ["poetry>=0.12"]
