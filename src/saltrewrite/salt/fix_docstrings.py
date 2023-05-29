@@ -5,7 +5,11 @@
     @todo: add description
 """
 # pylint: disable=consider-using-f-string
+import operator
 import re
+import sys
+from collections import namedtuple
+from functools import total_ordering
 
 from bowler import Query
 from bowler import TOKEN
@@ -117,11 +121,10 @@ def _convert_version_names_to_numbers(docstring, filename):
             try:
                 version = SaltStackVersion.from_name(version).string
             except ValueError:
-                if version.startswith("v"):
-                    try:
-                        version = SaltStackVersion.parse(version[1:]).string
-                    except ValueError:
-                        pass
+                try:
+                    version = SaltStackVersion.parse(version).string
+                except ValueError:
+                    pass
             parsed_versions.append(version)
         replace_contents = ".. {}:: {}".format(vtype, ",".join(parsed_versions))
         docstring = docstring.replace(match.group(0), replace_contents.rstrip())
@@ -199,13 +202,210 @@ def _fix_codeblocks(docstring, filename):
     return "".join(output)
 
 
-# pylint: disable=missing-function-docstring
+# pylint: disable=missing-function-docstring,missing-class-docstring
+
+MAX_SIZE = sys.maxsize
+VERSION_LIMIT = MAX_SIZE - 200
+
+
+@total_ordering
+class SaltVersion(namedtuple("SaltVersion", "name, info, released")):
+    __slots__ = ()
+
+    def __new__(cls, name, info, released=False):
+        if isinstance(info, int):
+            info = (info,)
+        return super().__new__(cls, name, info, released)
+
+    def __eq__(self, other):
+        return self.info == other.info
+
+    def __gt__(self, other):
+        return self.info > other.info
+
+
+class SaltVersionsInfo(type):
+
+    _sorted_versions = ()
+    _current_release = None
+    _previous_release = None
+    _next_release = None
+
+    # ----- Please refrain from fixing whitespace ---------------------------------->
+    # The idea is to keep this readable.
+    # -------------------------------------------------------------------------------
+    # fmt: off
+    HYDROGEN      = SaltVersion("Hydrogen"     , info=(2014, 1),  released=True)
+    HELIUM        = SaltVersion("Helium"       , info=(2014, 7),  released=True)
+    LITHIUM       = SaltVersion("Lithium"      , info=(2015, 5),  released=True)
+    BERYLLIUM     = SaltVersion("Beryllium"    , info=(2015, 8),  released=True)
+    BORON         = SaltVersion("Boron"        , info=(2016, 3),  released=True)
+    CARBON        = SaltVersion("Carbon"       , info=(2016, 11), released=True)
+    NITROGEN      = SaltVersion("Nitrogen"     , info=(2017, 7),  released=True)
+    OXYGEN        = SaltVersion("Oxygen"       , info=(2018, 3),  released=True)
+    FLUORINE      = SaltVersion("Fluorine"     , info=(2019, 2),  released=True)
+    NEON          = SaltVersion("Neon"         , info=3000,       released=True)
+    SODIUM        = SaltVersion("Sodium"       , info=3001,       released=True)
+    MAGNESIUM     = SaltVersion("Magnesium"    , info=3002,       released=True)
+    ALUMINIUM     = SaltVersion("Aluminium"    , info=3003,       released=True)
+    SILICON       = SaltVersion("Silicon"      , info=3004,       released=True)
+    PHOSPHORUS    = SaltVersion("Phosphorus"   , info=3005,       released=True)
+    SULFUR        = SaltVersion("Sulfur"       , info=(3006, 0),  released=True)
+    CHLORINE      = SaltVersion("Chlorine"     , info=(3007, 0))
+    ARGON         = SaltVersion("Argon"        , info=(3008, 0))
+    POTASSIUM     = SaltVersion("Potassium"    , info=(3009, 0))
+    CALCIUM       = SaltVersion("Calcium"      , info=(3010, 0))
+    SCANDIUM      = SaltVersion("Scandium"     , info=(3011, 0))
+    TITANIUM      = SaltVersion("Titanium"     , info=(3012, 0))
+    VANADIUM      = SaltVersion("Vanadium"     , info=(3013, 0))
+    CHROMIUM      = SaltVersion("Chromium"     , info=(3014, 0))
+    MANGANESE     = SaltVersion("Manganese"    , info=(3015, 0))
+    IRON          = SaltVersion("Iron"         , info=(3016, 0))
+    COBALT        = SaltVersion("Cobalt"       , info=(3017, 0))
+    NICKEL        = SaltVersion("Nickel"       , info=(3018, 0))
+    COPPER        = SaltVersion("Copper"       , info=(3019, 0))
+    ZINC          = SaltVersion("Zinc"         , info=(3020, 0))
+    GALLIUM       = SaltVersion("Gallium"      , info=(3021, 0))
+    GERMANIUM     = SaltVersion("Germanium"    , info=(3022, 0))
+    ARSENIC       = SaltVersion("Arsenic"      , info=(3023, 0))
+    SELENIUM      = SaltVersion("Selenium"     , info=(3024, 0))
+    BROMINE       = SaltVersion("Bromine"      , info=(3025, 0))
+    KRYPTON       = SaltVersion("Krypton"      , info=(3026, 0))
+    RUBIDIUM      = SaltVersion("Rubidium"     , info=(3027, 0))
+    STRONTIUM     = SaltVersion("Strontium"    , info=(3028, 0))
+    YTTRIUM       = SaltVersion("Yttrium"      , info=(3029, 0))
+    ZIRCONIUM     = SaltVersion("Zirconium"    , info=(3030, 0))
+    NIOBIUM       = SaltVersion("Niobium"      , info=(3031, 0))
+    MOLYBDENUM    = SaltVersion("Molybdenum"   , info=(3032, 0))
+    TECHNETIUM    = SaltVersion("Technetium"   , info=(3033, 0))
+    RUTHENIUM     = SaltVersion("Ruthenium"    , info=(3034, 0))
+    RHODIUM       = SaltVersion("Rhodium"      , info=(3035, 0))
+    PALLADIUM     = SaltVersion("Palladium"    , info=(3036, 0))
+    SILVER        = SaltVersion("Silver"       , info=(3037, 0))
+    CADMIUM       = SaltVersion("Cadmium"      , info=(3038, 0))
+    INDIUM        = SaltVersion("Indium"       , info=(3039, 0))
+    TIN           = SaltVersion("Tin"          , info=(3040, 0))
+    ANTIMONY      = SaltVersion("Antimony"     , info=(3041, 0))
+    TELLURIUM     = SaltVersion("Tellurium"    , info=(3042, 0))
+    IODINE        = SaltVersion("Iodine"       , info=(3043, 0))
+    XENON         = SaltVersion("Xenon"        , info=(3044, 0))
+    CESIUM        = SaltVersion("Cesium"       , info=(3045, 0))
+    BARIUM        = SaltVersion("Barium"       , info=(3046, 0))
+    LANTHANUM     = SaltVersion("Lanthanum"    , info=(3047, 0))
+    CERIUM        = SaltVersion("Cerium"       , info=(3048, 0))
+    PRASEODYMIUM  = SaltVersion("Praseodymium" , info=(3049, 0))
+    NEODYMIUM     = SaltVersion("Neodymium"    , info=(3050, 0))
+    PROMETHIUM    = SaltVersion("Promethium"   , info=(3051, 0))
+    SAMARIUM      = SaltVersion("Samarium"     , info=(3052, 0))
+    EUROPIUM      = SaltVersion("Europium"     , info=(3053, 0))
+    GADOLINIUM    = SaltVersion("Gadolinium"   , info=(3054, 0))
+    TERBIUM       = SaltVersion("Terbium"      , info=(3055, 0))
+    DYSPROSIUM    = SaltVersion("Dysprosium"   , info=(3056, 0))
+    HOLMIUM       = SaltVersion("Holmium"      , info=(3057, 0))
+    ERBIUM        = SaltVersion("Erbium"       , info=(3058, 0))
+    THULIUM       = SaltVersion("Thulium"      , info=(3059, 0))
+    YTTERBIUM     = SaltVersion("Ytterbium"    , info=(3060, 0))
+    LUTETIUM      = SaltVersion("Lutetium"     , info=(3061, 0))
+    HAFNIUM       = SaltVersion("Hafnium"      , info=(3062, 0))
+    TANTALUM      = SaltVersion("Tantalum"     , info=(3063, 0))
+    TUNGSTEN      = SaltVersion("Tungsten"     , info=(3064, 0))
+    RHENIUM       = SaltVersion("Rhenium"      , info=(3065, 0))
+    OSMIUM        = SaltVersion("Osmium"       , info=(3066, 0))
+    IRIDIUM       = SaltVersion("Iridium"      , info=(3067, 0))
+    PLATINUM      = SaltVersion("Platinum"     , info=(3068, 0))
+    GOLD          = SaltVersion("Gold"         , info=(3069, 0))
+    MERCURY       = SaltVersion("Mercury"      , info=(3070, 0))
+    THALLIUM      = SaltVersion("Thallium"     , info=(3071, 0))
+    LEAD          = SaltVersion("Lead"         , info=(3072, 0))
+    BISMUTH       = SaltVersion("Bismuth"      , info=(3073, 0))
+    POLONIUM      = SaltVersion("Polonium"     , info=(3074, 0))
+    ASTATINE      = SaltVersion("Astatine"     , info=(3075, 0))
+    RADON         = SaltVersion("Radon"        , info=(3076, 0))
+    FRANCIUM      = SaltVersion("Francium"     , info=(3077, 0))
+    RADIUM        = SaltVersion("Radium"       , info=(3078, 0))
+    ACTINIUM      = SaltVersion("Actinium"     , info=(3079, 0))
+    THORIUM       = SaltVersion("Thorium"      , info=(3080, 0))
+    PROTACTINIUM  = SaltVersion("Protactinium" , info=(3081, 0))
+    URANIUM       = SaltVersion("Uranium"      , info=(3082, 0))
+    NEPTUNIUM     = SaltVersion("Neptunium"    , info=(3083, 0))
+    PLUTONIUM     = SaltVersion("Plutonium"    , info=(3084, 0))
+    AMERICIUM     = SaltVersion("Americium"    , info=(3085, 0))
+    CURIUM        = SaltVersion("Curium"       , info=(3086, 0))
+    BERKELIUM     = SaltVersion("Berkelium"    , info=(3087, 0))
+    CALIFORNIUM   = SaltVersion("Californium"  , info=(3088, 0))
+    EINSTEINIUM   = SaltVersion("Einsteinium"  , info=(3089, 0))
+    FERMIUM       = SaltVersion("Fermium"      , info=(3090, 0))
+    MENDELEVIUM   = SaltVersion("Mendelevium"  , info=(3091, 0))
+    NOBELIUM      = SaltVersion("Nobelium"     , info=(3092, 0))
+    LAWRENCIUM    = SaltVersion("Lawrencium"   , info=(3093, 0))
+    RUTHERFORDIUM = SaltVersion("Rutherfordium", info=(3094, 0))
+    DUBNIUM       = SaltVersion("Dubnium"      , info=(3095, 0))
+    SEABORGIUM    = SaltVersion("Seaborgium"   , info=(3096, 0))
+    BOHRIUM       = SaltVersion("Bohrium"      , info=(3097, 0))
+    HASSIUM       = SaltVersion("Hassium"      , info=(3098, 0))
+    MEITNERIUM    = SaltVersion("Meitnerium"   , info=(3099, 0))
+    DARMSTADTIUM  = SaltVersion("Darmstadtium" , info=(3100, 0))
+    ROENTGENIUM   = SaltVersion("Roentgenium"  , info=(3101, 0))
+    COPERNICIUM   = SaltVersion("Copernicium"  , info=(3102, 0))
+    NIHONIUM      = SaltVersion("Nihonium"     , info=(3103, 0))
+    FLEROVIUM     = SaltVersion("Flerovium"    , info=(3104, 0))
+    MOSCOVIUM     = SaltVersion("Moscovium"    , info=(3105, 0))
+    LIVERMORIUM   = SaltVersion("Livermorium"  , info=(3106, 0))
+    TENNESSINE    = SaltVersion("Tennessine"   , info=(3107, 0))
+    OGANESSON     = SaltVersion("Oganesson"    , info=(3108, 0))
+    # <---- Please refrain from fixing whitespace -----------------------------------
+    # The idea is to keep this readable.
+    # -------------------------------------------------------------------------------
+    # fmt: on
+
+    @classmethod
+    def versions(cls):
+        if not cls._sorted_versions:
+            cls._sorted_versions = sorted(
+                (getattr(cls, name) for name in dir(cls) if name.isupper()),
+                key=operator.attrgetter("info"),
+            )
+        return cls._sorted_versions
+
+    @classmethod
+    def current_release(cls):
+        if cls._current_release is None:
+            for version in cls.versions():
+                if version.released is False:
+                    cls._current_release = version
+                    break
+        return cls._current_release
+
+    @classmethod
+    def next_release(cls):
+        if cls._next_release is None:
+            next_release_ahead = False
+            for version in cls.versions():
+                if next_release_ahead:
+                    cls._next_release = version
+                    break
+                if version == cls.current_release():
+                    next_release_ahead = True
+        return cls._next_release
+
+    @classmethod
+    def previous_release(cls):
+        if cls._previous_release is None:
+            previous = None
+            for version in cls.versions():
+                if version == cls.current_release():
+                    break
+                previous = version
+            cls._previous_release = previous
+        return cls._previous_release
+
+
 class SaltStackVersion:
     """
-    This is a copy of SaltStackVersion from salt/version.py
+    Handle SaltStack versions class.
 
-    It only exists here as a copy so that we don't need salt to be importable
-    to convert version names to version numbers
+    Knows how to parse ``git describe`` output, knows about release candidates
+    and also supports version comparison.
     """
 
     __slots__ = (
@@ -234,142 +434,7 @@ class SaltStackVersion:
 
     git_sha_regex = re.compile(git_sha_regex)
 
-    # Salt versions after 0.17.0 will be numbered like:
-    #   <4-digit-year>.<month>.<bugfix>
-    #
-    # Since the actual version numbers will only be know on release dates, the
-    # periodic table element names will be what's going to be used to name
-    # versions and to be able to mention them.
-
-    NAMES = {
-        # Let's keep at least 3 version names uncommented counting from the
-        # latest release so we can map deprecation warnings to versions.
-        # ----- Please refrain from fixing PEP-8 E203 and E265 ----->
-        # The idea is to keep this readable.
-        # -----------------------------------------------------------
-        # fmt: off
-        "Hydrogen"     : (2014, 1),
-        "Helium"       : (2014, 7),
-        "Lithium"      : (2015, 5),
-        "Beryllium"    : (2015, 8),
-        "Boron"        : (2016, 3),
-        "Carbon"       : (2016, 11),
-        "Nitrogen"     : (2017, 7),
-        "Oxygen"       : (2018, 3),
-        "Fluorine"     : (2019, 2),
-        "Neon"         : (3000,),
-        "Sodium"       : (3001,),
-        "Magnesium"    : (3002,),
-        "Aluminium"    : (3003,),
-        "Silicon"      : (3004,),
-        "Phosphorus"   : (3005,),
-        'Sulfur'       : (3006,),
-        'Chlorine'     : (3007,),
-        'Argon'        : (3008,),
-        'Potassium'    : (3009,),
-        'Calcium'      : (3010,),
-        'Scandium'     : (3011,),
-        'Titanium'     : (3012,),
-        'Vanadium'     : (3013,),
-        'Chromium'     : (3014,),
-        'Manganese'    : (3015,),
-        "Iron"         : (3016,),
-        "Cobalt"       : (3017,),
-        "Nickel"       : (3018,),
-        "Copper"       : (3019,),
-        "Zinc"         : (3020,),
-        "Gallium"      : (3021,),
-        "Germanium"    : (3022,),
-        "Arsenic"      : (3023,),
-        "Selenium"     : (3024,),
-        "Bromine"      : (3025,),
-        "Krypton"      : (3026,),
-        "Rubidium"     : (3027,),
-        "Strontium"    : (3028,),
-        "Yttrium"      : (3029,),
-        "Zirconium"    : (3030,),
-        "Niobium"      : (3031,),
-        "Molybdenum"   : (3032,),
-        "Technetium"   : (3033,),
-        "Ruthenium"    : (3034,),
-        "Rhodium"      : (3035,),
-        "Palladium"    : (3036,),
-        "Silver"       : (3037,),
-        "Cadmium"      : (3038,),
-        "Indium"       : (3039,),
-        "Tin"          : (3040,),
-        "Antimony"     : (3041,),
-        "Tellurium"    : (3042,),
-        "Iodine"       : (3043,),
-        "Xenon"        : (3044,),
-        "Cesium"       : (3045,),
-        "Barium"       : (3046,),
-        "Lanthanum"    : (3047,),
-        "Cerium"       : (3048,),
-        "Praseodymium" : (3049,),
-        "Neodymium"    : (3050,),
-        "Promethium"   : (3051,),
-        "Samarium"     : (3052,),
-        "Europium"     : (3053,),
-        "Gadolinium"   : (3054,),
-        "Terbium"      : (3055,),
-        "Dysprosium"   : (3056,),
-        "Holmium"      : (3057,),
-        "Erbium"       : (3058,),
-        "Thulium"      : (3059,),
-        "Ytterbium"    : (3060,),
-        "Lutetium"     : (3061,),
-        "Hafnium"      : (3062,),
-        "Tantalum"     : (3063,),
-        "Tungsten"     : (3064,),
-        "Rhenium"      : (3065,),
-        "Osmium"       : (3066,),
-        "Iridium"      : (3067,),
-        "Platinum"     : (3068,),
-        "Gold"         : (3069,),
-        "Mercury"      : (3070,),
-        "Thallium"     : (3071,),
-        "Lead"         : (3072,),
-        "Bismuth"      : (3073,),
-        "Polonium"     : (3074,),
-        "Astatine"     : (3075,),
-        "Radon"        : (3076,),
-        "Francium"     : (3077,),
-        "Radium"       : (3078,),
-        "Actinium"     : (3079,),
-        "Thorium"      : (3080,),
-        "Protactinium" : (3081,),
-        "Uranium"      : (3082,),
-        "Neptunium"    : (3083,),
-        "Plutonium"    : (3084,),
-        "Americium"    : (3085,),
-        "Curium"       : (3086,),
-        "Berkelium"    : (3087,),
-        "Californium"  : (3088,),
-        "Einsteinium"  : (3089,),
-        "Fermium"      : (3090,),
-        "Mendelevium"  : (3091,),
-        "Nobelium"     : (3092,),
-        "Lawrencium"   : (3093,),
-        "Rutherfordium": (3094,),
-        "Dubnium"      : (3095,),
-        "Seaborgium"   : (3096,),
-        "Bohrium"      : (3097,),
-        "Hassium"      : (3098,),
-        "Meitnerium"   : (3099,),
-        "Darmstadtium" : (3100,),
-        "Roentgenium"  : (3101,),
-        "Copernicium"  : (3102,),
-        "Nihonium"     : (3103,),
-        "Flerovium"    : (3104,),
-        "Moscovium"    : (3105,),
-        "Livermorium"  : (3106,),
-        "Tennessine"   : (3107,),
-        "Oganesson"    : (3108,),
-        # <---- Please refrain from fixing PEP-8 E203 and E265 ------
-        # fmt: on
-    }
-
+    NAMES = {v.name: v.info for v in SaltVersionsInfo.versions()}
     LNAMES = {k.lower(): v for (k, v) in iter(NAMES.items())}
     VNAMES = {v: k for (k, v) in iter(NAMES.items())}
     RMATCH = {v[:2]: k for (k, v) in iter(NAMES.items())}
@@ -385,7 +450,6 @@ class SaltStackVersion:
         noc=0,
         sha=None,
     ):
-
         if isinstance(major, str):
             major = int(major)
 
@@ -395,6 +459,8 @@ class SaltStackVersion:
                 minor = None
             else:
                 minor = int(minor)
+        if self.can_have_dot_zero(major):
+            minor = minor if minor else 0
 
         if bugfix is None and not self.new_version(major=major):
             bugfix = 0
@@ -429,9 +495,13 @@ class SaltStackVersion:
         self.mbugfix = mbugfix
         self.pre_type = pre_type
         self.pre_num = pre_num
-        self.name = self.VNAMES.get((major, minor), None)
-        if self.new_version(major):
-            self.name = self.VNAMES.get((major,), None)
+        if self.can_have_dot_zero(major):
+            vnames_key = (major, 0)
+        elif self.new_version(major):
+            vnames_key = (major,)
+        else:
+            vnames_key = (major, minor)
+        self.name = self.VNAMES.get(vnames_key)
         self.noc = noc
         self.sha = sha
 
@@ -439,7 +509,13 @@ class SaltStackVersion:
         """
         determine if using new versioning scheme
         """
-        return bool(int(major) >= 3000 and int(major) < self.NAMES["Oganesson"][0])
+        return bool(int(major) >= 3000 and int(major) < VERSION_LIMIT)
+
+    def can_have_dot_zero(self, major):
+        """
+        determine if using new versioning scheme
+        """
+        return bool(int(major) >= 3006 and int(major) < VERSION_LIMIT)
 
     @classmethod
     def parse(cls, version_string):
@@ -458,28 +534,12 @@ class SaltStackVersion:
         return cls(*cls.LNAMES[name.lower()])
 
     @classmethod
-    def from_last_named_version(cls):
-        return cls.from_name(
-            cls.VNAMES[
-                max(
-                    version_info
-                    for version_info in cls.VNAMES
-                    if version_info[0] < cls.NAMES["Oganesson"][0]
-                )
-            ]
-        )
+    def current_release(cls):
+        return cls(*SaltVersionsInfo.current_release().info)
 
     @classmethod
     def next_release(cls):
-        return cls.from_name(
-            cls.VNAMES[
-                min(
-                    version_info
-                    for version_info in cls.VNAMES
-                    if version_info > cls.from_last_named_version().info
-                )
-            ]
-        )
+        return cls(*SaltVersionsInfo.next_release().info)
 
     @property
     def sse(self):
@@ -490,6 +550,8 @@ class SaltStackVersion:
         info = [self.major]
         if self.new_version(self.major):
             if self.minor:
+                info.append(self.minor)
+            elif self.can_have_dot_zero(self.major):
                 info.append(self.minor)
         else:
             info.extend([self.minor, self.bugfix, self.mbugfix])
@@ -542,6 +604,8 @@ class SaltStackVersion:
             version_string = f"{self.major}"
             if self.minor:
                 version_string = f"{self.major}.{self.minor}"
+            if not self.minor and self.can_have_dot_zero(self.major):
+                version_string = f"{self.major}.{self.minor}"
         else:
             version_string = f"{self.major}.{self.minor}.{self.bugfix}"
         if self.mbugfix:
@@ -591,7 +655,6 @@ class SaltStackVersion:
                 other = SaltStackVersion(*other)
             else:
                 raise ValueError(f"Cannot instantiate Version from type '{type(other)}'")
-
         pre_type = self.pre_index
         other_pre_type = other.pre_index
         other_noc_info = list(other.noc_info)
@@ -643,7 +706,7 @@ class SaltStackVersion:
         parts.extend([f"major={self.major}", f"minor={self.minor}"])
 
         if self.new_version(self.major):
-            if not self.minor:
+            if not self.can_have_dot_zero(self.major) and not self.minor:
                 parts.remove("".join([x for x in parts if re.search("^minor*", x)]))
         else:
             parts.extend([f"bugfix={self.bugfix}"])
@@ -660,4 +723,4 @@ class SaltStackVersion:
         return "<{} {}>".format(self.__class__.__name__, " ".join(parts))
 
 
-# pylint: enable=missing-function-docstring
+# pylint: enable=missing-function-docstring,missing-class-docstring
