@@ -108,27 +108,34 @@ CONVERT_VERSION_NAMES_TO_NUMBERS_RE = re.compile(
 )
 
 
+def _handle_convert_version_names_to_numbers_match(match):
+    """
+    Convert every match with a properly formatted version.
+    """
+    vtype = match.group("vtype")
+    version = match.group("version")
+    versions = [vs.strip() for vs in version.split(",")]
+    parsed_versions = []
+    for version in versions:
+        try:
+            version = SaltStackVersion.from_name(version).string
+        except ValueError:
+            try:
+                version = SaltStackVersion.parse(version).string
+            except ValueError:
+                pass
+        parsed_versions.append(version)
+    replace_contents = ".. {}:: {}".format(vtype, ",".join(parsed_versions))
+    return replace_contents
+
+
 def _convert_version_names_to_numbers(docstring, filename):
     """
     Convert Salt version names to their version numbers counterpart
     """
-    for match in CONVERT_VERSION_NAMES_TO_NUMBERS_RE.finditer(docstring):
-        vtype = match.group("vtype")
-        version = match.group("version")
-        versions = [vs.strip() for vs in version.split(",")]
-        parsed_versions = []
-        for version in versions:
-            try:
-                version = SaltStackVersion.from_name(version).string
-            except ValueError:
-                try:
-                    version = SaltStackVersion.parse(version).string
-                except ValueError:
-                    pass
-            parsed_versions.append(version)
-        replace_contents = ".. {}:: {}".format(vtype, ",".join(parsed_versions))
-        docstring = docstring.replace(match.group(0), replace_contents.rstrip())
-    return docstring
+    return CONVERT_VERSION_NAMES_TO_NUMBERS_RE.sub(
+        _handle_convert_version_names_to_numbers_match, docstring
+    )
 
 
 CLI_EXAMPLE_CASE_AND_SPACING_RE = re.compile(
@@ -157,21 +164,22 @@ DIRECTIVES_FORMATTING_RE = re.compile(
 )
 
 
+def _handle_fix_directives_formatting_match(match):
+    return (
+        "\n{}.. {}:: {}".format(
+            match.group("spc1") or "",
+            match.group("directive"),
+            match.group("remaining") or "",
+        ).rstrip()
+        + "\n"
+    )
+
+
 def _fix_directives_formatting(docstring, filename):
     """
     Fix directive definition spacing
     """
-    for match in DIRECTIVES_FORMATTING_RE.finditer(docstring):
-        replacement = (
-            "\n{}.. {}:: {}".format(
-                match.group("spc1") or "",
-                match.group("directive"),
-                match.group("remaining") or "",
-            ).rstrip()
-            + "\n"
-        )
-        docstring = docstring.replace(match.group(0), replacement)
-    return docstring
+    return DIRECTIVES_FORMATTING_RE.sub(_handle_fix_directives_formatting_match, docstring)
 
 
 FIX_CODE_BLOCKS_RE = re.compile(

@@ -243,12 +243,14 @@ def test_fix_versionadded_module_docstring_dot_zero_suffix(tempfiles, vtype):
     '''
     New module blah
 
-    ..{}:3006
+    ..{0}:3006
     '''
 
     def one():
         '''
         One function
+
+        ..{0}::3006.0
         '''
         print("one")
     """.format(
@@ -261,12 +263,75 @@ def test_fix_versionadded_module_docstring_dot_zero_suffix(tempfiles, vtype):
     '''
     New module blah
 
-    .. {}:: 3006.0
+    .. {0}:: 3006.0
     '''
 
     def one():
         '''
         One function
+
+        .. {0}:: 3006.0
+        '''
+        print("one")
+    """.format(
+            vtype
+        )
+    )
+    fpath = tempfiles.makepyfile(code, prefix="test_")
+    fix_docstrings.rewrite(fpath)
+    with open(fpath) as rfh:
+        new_code = rfh.read()
+    assert new_code == expected_code
+
+
+@pytest.mark.parametrize("vtype", ["versionadded", "versionchanged", "deprecated"])
+def test_fix_version_repeated_in_same_docstring(tempfiles, vtype):
+    code = textwrap.dedent(
+        """
+    # -*- coding: utf-8 -*-
+    '''
+    New module blah
+
+    ..{0}:3006
+    '''
+
+    def one(two, three):
+        '''
+        One function
+
+        ..{0}::3006.0
+
+        Args:
+            two: Two
+            .. {0}::3006
+            three: Three
+            .. {0}:: 3006
+        '''
+        print("one")
+    """.format(
+            vtype
+        )
+    )
+    expected_code = textwrap.dedent(
+        """
+    # -*- coding: utf-8 -*-
+    '''
+    New module blah
+
+    .. {0}:: 3006.0
+    '''
+
+    def one(two, three):
+        '''
+        One function
+
+        .. {0}:: 3006.0
+
+        Args:
+            two: Two
+            .. {0}:: 3006.0
+            three: Three
+            .. {0}:: 3006.0
         '''
         print("one")
     """.format(
