@@ -14,7 +14,7 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.8,<4"
 bowler = ">= 0.9.0"
-fissix = {version = "^19.2b1", allow-prereleases = true}
+fissix = {version = "^21.6", allow-prereleases = false}
 
 [tool.poetry.dev-dependencies]
 pytest = ">= 5.3.4"
