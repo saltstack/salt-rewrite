@@ -1,11 +1,15 @@
 """
-    saltrewrite.salt.fix_docstrings
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    saltrewrite.salt.fix_dunder_utils
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    @todo: add description
+    Fix ``__utils__["*.*"](...)`` calls to import and call the real utils module function.
 """
-import logging
+import ast
+import os
+import pathlib
+from functools import lru_cache
 
+import click
 from bowler import Query
 from bowler import SYMBOL
 from bowler import TOKEN
@@ -15,7 +19,62 @@ from fissix.fixer_util import Call
 from fissix.fixer_util import Dot
 from fissix.fixer_util import touch_import
 
-log = logging.getLogger(__name__)
+
+class DunderParser(ast.NodeTransformer):  # pylint: disable=missing-class-docstring
+    # pylint: disable=missing-function-docstring,invalid-name
+    def __init__(self):
+        self.virtualname = None
+        self.uses_salt_dunders = False
+
+    def visit_Name(self, node):
+        salt_dunders = (
+            "__opts__",
+            "__salt__",
+        )
+        if node.id in salt_dunders:
+            self.uses_salt_dunders = True
+
+    def visit_Assign(self, node):
+        for target in node.targets:
+            if not isinstance(target, ast.Name):
+                continue
+            if target.id == "__virtualname__":
+                self.virtualname = node.value.s
+
+    # pylint: enable=missing-function-docstring,invalid-name
+
+
+@lru_cache
+def get_utils_module_info():
+    """
+    Collect utils modules dunder information.
+    """
+    mapping = {}
+    for path in pathlib.Path("salt", "utils").rglob("*.py"):
+        transformer = DunderParser()
+        tree = ast.parse(path.read_text())
+        transformer.visit(tree)
+        mapping[path.resolve()] = {
+            "modname": path.stem,
+            "virtualname": transformer.virtualname or path.stem,
+            "uses_salt_dunders": transformer.uses_salt_dunders,
+        }
+    return mapping
+
+
+@lru_cache
+def get_utils_module_details(name):
+    """
+    Return utils module details.
+    """
+    full_module_name = f"salt.utils.{name}"
+    full_module_path = pathlib.Path(full_module_name.replace(".", os.sep))
+    if full_module_path.exists():
+        return get_utils_module_info()[full_module_path]
+    modname = name.split(".")[0]
+    for entry in get_utils_module_info().values():
+        if entry["virtualname"] == modname:
+            return entry
 
 
 def rewrite(paths, interactive=False, silent=False):
@@ -36,23 +95,34 @@ def rewrite(paths, interactive=False, silent=False):
             )
             """
         )
-        .modify(fix_module_docstrings)
+        .modify(fix_dunder_utils_calls)
         .execute(write=True, interactive=interactive, silent=silent)
     )
 
 
-def fix_module_docstrings(node, capture, filename):
+def fix_dunder_utils_calls(node, capture, filename):
     """
-    Automaticaly run fixes against docstrings
+    Automatically rewrite dunder utils calls to call the module directly.
     """
     if "dunder_mod_func" not in capture:
         return
     dunder_mod_func = capture["dunder_mod_func"][0].value.strip("'").strip('"')
+
     utils_module, utils_module_funcname = dunder_mod_func.split(".")
+    details = get_utils_module_details(utils_module)
+    if details["uses_salt_dunders"]:
+
+        click.echo(
+            f" * Not calling 'salt.utils.{details['modname']}.{utils_module_funcname}' "
+            f"directly because internally the 'salt.utils.{details['modname']}' "
+            "module uses salt dunders",
+            err=True,
+        )
+        return
 
     # Make sure we import the right utils module
-    touch_import(None, f"salt.utils.{utils_module}", node)
-    log.info("Dunder Module Func: %r", dunder_mod_func)
+    touch_import(None, f"salt.utils.{details['modname']}", node)
+    click.echo(f" * Fixing dunder module func call: '{dunder_mod_func}'")
 
     # Un-parent the function arguments so we can add them to a new call
     for leaf in capture["function_arguments"]:
@@ -75,7 +145,7 @@ def fix_module_docstrings(node, capture, filename):
                     Dot(),
                     Leaf(TOKEN.NAME, "utils", prefix=""),
                     Dot(),
-                    Leaf(TOKEN.NAME, utils_module, prefix=""),
+                    Leaf(TOKEN.NAME, details["modname"], prefix=""),
                     Dot(),
                     call_node,
                 ],
