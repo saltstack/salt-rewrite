@@ -28,8 +28,29 @@ class DunderParser(ast.NodeTransformer):  # pylint: disable=missing-class-docstr
 
     def visit_Name(self, node):
         salt_dunders = (
+            "__active_provider_name__",
+            "__context__",
+            "__env__",
+            "__events__",
+            "__executors__",
+            "__grains__",
+            "__instance_id__",
+            "__jid_event__",
+            "__low__",
+            "__lowstate__",
+            "__master_opts__",
             "__opts__",
+            "__pillar__",
+            "__proxy__",
+            "__reg__",
+            "__ret__",
+            "__runner__",
+            "__running__",
             "__salt__",
+            "__salt_system_encoding__",
+            "__serializers__",
+            "__states__",
+            "__utils__",
         )
         if node.id in salt_dunders:
             self.uses_salt_dunders = True
