@@ -124,16 +124,18 @@ def _handle_convert_version_names_to_numbers_match(match):
             else:
                 versions.add(_vs)
     parsed_versions = []
-    for version in sorted(versions):
+    for version in versions:
         try:
-            version = SaltStackVersion.from_name(version).string
+            version = SaltStackVersion.from_name(version)
         except ValueError:
             try:
-                version = SaltStackVersion.parse(version).string
+                version = SaltStackVersion.parse(version)
             except ValueError:
                 pass
         parsed_versions.append(version)
-    replace_contents = ".. {}:: {}".format(vtype, ",".join(parsed_versions))
+    replace_contents = ".. {}:: {}".format(
+        vtype, ",".join([v.string for v in sorted(parsed_versions)])
+    )
     return replace_contents
 
 
