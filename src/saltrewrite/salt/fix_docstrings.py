@@ -11,6 +11,7 @@ import sys
 from collections import namedtuple
 from functools import total_ordering
 
+import click
 from bowler import Query
 from bowler import TOKEN
 
@@ -114,7 +115,16 @@ def _handle_convert_version_names_to_numbers_match(match):
     """
     vtype = match.group("vtype")
     version = match.group("version")
-    versions = [vs.strip() for vs in version.split(",")]
+    versions = set()
+    splitters = (",", "/", " ")
+    for splitter in splitters:
+        for _vs in version.split(splitter):
+            for _splitter in splitters:
+                if _splitter in _vs:
+                    break
+            else:
+                versions.add(_vs)
+    click.echo(f"Versions: {versions}")
     parsed_versions = []
     for version in versions:
         try:
