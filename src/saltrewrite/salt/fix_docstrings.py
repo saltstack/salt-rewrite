@@ -124,7 +124,7 @@ def _handle_convert_version_names_to_numbers_match(match):
             else:
                 versions.add(_vs)
     parsed_versions = []
-    for version in versions:
+    for version in sorted(versions):
         try:
             version = SaltStackVersion.from_name(version).string
         except ValueError:
@@ -531,6 +531,8 @@ class SaltStackVersion:
         """
         determine if using new versioning scheme
         """
+        if int(major) < 3000:
+            return True
         return bool(int(major) >= 3006 and int(major) < VERSION_LIMIT)
 
     @classmethod
