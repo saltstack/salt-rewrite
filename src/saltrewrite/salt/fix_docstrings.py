@@ -11,7 +11,6 @@ import sys
 from collections import namedtuple
 from functools import total_ordering
 
-import click
 from bowler import Query
 from bowler import TOKEN
 
@@ -124,7 +123,6 @@ def _handle_convert_version_names_to_numbers_match(match):
                     break
             else:
                 versions.add(_vs)
-    click.echo(f"Versions: {versions}")
     parsed_versions = []
     for version in versions:
         try:
