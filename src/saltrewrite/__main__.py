@@ -51,17 +51,6 @@ def rewrite(paths, interactive, silent, list_fixes, fix, exclude_fix):
     if fix and exclude_fix:
         raise click.UsageError("The --fix and --exclude-fix are mutually exclusive options")
 
-    with click.progressbar(
-        Registry.fixes(excluded_names=exclude_fix, only_names=fix),
-        item_show_func=format_progress_bar,
-    ) as fixes:
-        for _, module in fixes:
-            module.rewrite(paths, interactive=interactive, silent=silent)
-
-
-def format_progress_bar(item):
-    """
-    Format a progress bar item
-    """
-    if item is not None:
-        return f"Processing {item[0]}"
+    for fixname, module in Registry.fixes(excluded_names=exclude_fix, only_names=fix):
+        click.echo(f"Running {fixname} ...", err=True)
+        module.rewrite(paths, interactive=interactive, silent=silent)
