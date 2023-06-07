@@ -65,13 +65,18 @@ class DunderParser(ast.NodeTransformer):  # pylint: disable=missing-class-docstr
     # pylint: enable=missing-function-docstring,invalid-name
 
 
+def _get_salt_code_root():
+    return pathlib.Path.cwd()
+
+
 @lru_cache
 def get_utils_module_info():
     """
     Collect utils modules dunder information.
     """
     mapping = {}
-    for path in pathlib.Path("salt", "utils").rglob("*.py"):
+    salt_utils_package_path = _get_salt_code_root().joinpath("salt", "utils")
+    for path in salt_utils_package_path.rglob("*.py"):
         transformer = DunderParser()
         tree = ast.parse(path.read_text())
         transformer.visit(tree)
@@ -89,13 +94,17 @@ def get_utils_module_details(name):
     Return utils module details.
     """
     full_module_name = f"salt.utils.{name}"
-    full_module_path = pathlib.Path(full_module_name.replace(".", os.sep))
+    full_module_path = pathlib.Path(f"{full_module_name.replace('.', os.sep)}.py")
+    utils_module_info = get_utils_module_info()
     if full_module_path.exists():
-        return get_utils_module_info()[full_module_path]
+        return utils_module_info[full_module_path]
     modname = name.split(".")[0]
-    for entry in get_utils_module_info().values():
+    for entry in utils_module_info.values():
         if entry["virtualname"] == modname:
             return entry
+    raise RuntimeError(
+        f"Could not find the python module for {name!r} and '{full_module_path}' " "does not exist"
+    )
 
 
 def rewrite(paths, interactive=False, silent=False):
