@@ -20,6 +20,33 @@ from fissix.fixer_util import Dot
 from fissix.fixer_util import touch_import
 
 
+SALT_DUNDERS = (
+    "__active_provider_name__",
+    "__context__",
+    "__env__",
+    "__events__",
+    "__executors__",
+    "__grains__",
+    "__instance_id__",
+    "__jid_event__",
+    "__low__",
+    "__lowstate__",
+    "__master_opts__",
+    "__opts__",
+    "__pillar__",
+    "__proxy__",
+    "__reg__",
+    "__ret__",
+    "__runner__",
+    "__running__",
+    "__salt__",
+    "__salt_system_encoding__",
+    "__serializers__",
+    "__states__",
+    "__utils__",
+)
+
+
 class DunderParser(ast.NodeTransformer):  # pylint: disable=missing-class-docstring
     # pylint: disable=missing-function-docstring,invalid-name
     def __init__(self):
@@ -27,32 +54,7 @@ class DunderParser(ast.NodeTransformer):  # pylint: disable=missing-class-docstr
         self.uses_salt_dunders = False
 
     def visit_Name(self, node):
-        salt_dunders = (
-            "__active_provider_name__",
-            "__context__",
-            "__env__",
-            "__events__",
-            "__executors__",
-            "__grains__",
-            "__instance_id__",
-            "__jid_event__",
-            "__low__",
-            "__lowstate__",
-            "__master_opts__",
-            "__opts__",
-            "__pillar__",
-            "__proxy__",
-            "__reg__",
-            "__ret__",
-            "__runner__",
-            "__running__",
-            "__salt__",
-            "__salt_system_encoding__",
-            "__serializers__",
-            "__states__",
-            "__utils__",
-        )
-        if node.id in salt_dunders:
+        if node.id in SALT_DUNDERS:
             self.uses_salt_dunders = True
 
     def visit_Assign(self, node):
