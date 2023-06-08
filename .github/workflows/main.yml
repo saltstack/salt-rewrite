@@ -258,6 +258,7 @@ jobs:
       run: |
         poetry install
     - name: Test
+      shell: bash
       run: |
         poetry run coverage run -m pytest -v -ra -s --color=yes --full-trace tests
         poetry run coverage combine
