@@ -77,17 +77,15 @@ jobs:
     - name: Build CodeCov Flags
       id: codecov-info
       run: |
-        PY_VERSION=$(python -c "import sys; print('py{}{}'.format(*sys.version_info))")
         UPLOADER_URL="https://uploader.codecov.io/latest/codecov-linux"
-        echo "py-version=$PY_VERSION" >> "$GITHUB_OUTPUT"
         echo "uploader-url=$UPLOADER_URL" >> "$GITHUB_OUTPUT"
 
     - name: Upload Code Coverage
       if: always()
       shell: bash
       env:
-        REPORT_FLAGS: linux,${{ steps.codecov-info.outputs.py-version }}
-        REPORT_NAME: linux-${{ steps.codecov-info.outputs.py-version }}
+        REPORT_FLAGS: linux,${{ matrix.python-version }}
+        REPORT_NAME: linux-${{ matrix.python-version }}
         REPORT_PATH: coverage.xml
       run: |
         if [ ! -f codecov-uploader ]; then
@@ -173,17 +171,15 @@ jobs:
     - name: Build CodeCov Flags
       id: codecov-info
       run: |
-        PY_VERSION=$(python -c "import sys; print('py{}{}'.format(*sys.version_info))")
         UPLOADER_URL="https://uploader.codecov.io/latest/codecov-macos"
-        echo "py-version=$PY_VERSION" >> "$GITHUB_OUTPUT"
         echo "uploader-url=$UPLOADER_URL" >> "$GITHUB_OUTPUT"
 
     - name: Upload Code Coverage
       if: always()
       shell: bash
       env:
-        REPORT_FLAGS: macos,${{ steps.codecov-info.outputs.py-version }}
-        REPORT_NAME: macos-${{ steps.codecov-info.outputs.py-version }}
+        REPORT_FLAGS: macos,${{ matrix.python-version }}
+        REPORT_NAME: macos-${{ matrix.python-version }}
         REPORT_PATH: coverage.xml
       run: |
         if [ ! -f codecov-uploader ]; then
@@ -268,17 +264,15 @@ jobs:
       id: codecov-info
       shell: bash
       run: |
-        PY_VERSION=$(python -c "import sys; print('py{}{}'.format(*sys.version_info))")
         UPLOADER_URL="https://uploader.codecov.io/latest/codecov.exe"
-        echo "py-version=$PY_VERSION" >> "$GITHUB_OUTPUT"
         echo "uploader-url=$UPLOADER_URL" >> "$GITHUB_OUTPUT"
 
     - name: Upload Code Coverage
       if: always()
       shell: bash
       env:
-        REPORT_FLAGS: windows,${{ steps.codecov-info.outputs.py-version }}
-        REPORT_NAME: windows-${{ steps.codecov-info.outputs.py-version }}
+        REPORT_FLAGS: windows,${{ matrix.python-version }}
+        REPORT_NAME: windows-${{ matrix.python-version }}
         REPORT_PATH: coverage.xml
       run: |
         if [ ! -f codecov-uploader ]; then
