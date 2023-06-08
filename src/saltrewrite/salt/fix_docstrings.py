@@ -122,7 +122,7 @@ def _handle_convert_version_names_to_numbers_match(match):
                 if _splitter in _vs:
                     break
             else:
-                versions.add(_vs)
+                versions.add(_vs.strip())
     parsed_versions = []
     for version in versions:
         try:
@@ -131,7 +131,7 @@ def _handle_convert_version_names_to_numbers_match(match):
             try:
                 parsed_versions.append(SaltStackVersion.parse(version))
             except ValueError as exc:
-                raise RuntimeError(f"Unable to parse '{version}' as a SaltStackVersion") from exc
+                raise RuntimeError(f"Unable to parse {version!r} as a SaltStackVersion") from exc
 
     replace_contents = ".. {}:: {}".format(
         vtype, ",".join([v.string for v in sorted(parsed_versions)])
