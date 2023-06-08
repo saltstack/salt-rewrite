@@ -227,7 +227,7 @@ VERSION_LIMIT = MAX_SIZE - 200
 
 
 @total_ordering
-class SaltVersion(namedtuple("SaltVersion", "name, info, released")):
+class SaltVersion(namedtuple("SaltVersion", "name, info, released")):  # pragma: no cover
     __slots__ = ()
 
     def __new__(cls, name, info, released=False):
@@ -242,7 +242,7 @@ class SaltVersion(namedtuple("SaltVersion", "name, info, released")):
         return self.info > other.info
 
 
-class SaltVersionsInfo(type):
+class SaltVersionsInfo(type):  # pragma: no cover
 
     _sorted_versions = ()
     _current_release = None
@@ -418,7 +418,7 @@ class SaltVersionsInfo(type):
         return cls._previous_release
 
 
-class SaltStackVersion:
+class SaltStackVersion:  # pragma: no cover
     """
     Handle SaltStack versions class.
 
