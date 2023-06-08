@@ -15,7 +15,8 @@ jobs:
       - name: Get full python version
         id: full-python-version
         run: |
-          echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
+          PY=$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
+          echo "version=$PY" >> "$GITHUB_OUTPUT"
       - name: Set up cache
         uses: actions/cache@v3
         with:
