@@ -53,7 +53,8 @@ jobs:
     - name: Get full python version
       id: full-python-version
       run: |
-        echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
+        PY=$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
+        echo "version=$PY" >> "$GITHUB_OUTPUT"
     - name: Install and set up Poetry
       run: |
         pip install poetry
@@ -76,15 +77,17 @@ jobs:
     - name: Build CodeCov Flags
       id: codecov-info
       run: |
-        echo ::set-output name=py_version::$(python -c "import sys; print('py{}{}'.format(*sys.version_info))")
-        echo ::set-output name=uploader-url::$(python -c "print('https://uploader.codecov.io/latest/codecov-linux')")
+        PY_VERSION=$(python -c "import sys; print('py{}{}'.format(*sys.version_info))")
+        UPLOADER_URL="https://uploader.codecov.io/latest/codecov-linux"
+        echo "py-version=$PY_VERSION" >> "$GITHUB_OUTPUT"
+        echo "uploader-url=$UPLOADER_URL" >> "$GITHUB_OUTPUT"
 
     - name: Upload Code Coverage
       if: always()
       shell: bash
       env:
-        REPORT_FLAGS: linux,${{ steps.codecov-info.outputs.py_version }}
-        REPORT_NAME: linux-${{ steps.codecov-info.outputs.py_version }}
+        REPORT_FLAGS: linux,${{ steps.codecov-info.outputs.py-version }}
+        REPORT_NAME: linux-${{ steps.codecov-info.outputs.py-version }}
         REPORT_PATH: coverage.xml
       run: |
         if [ ! -f codecov-uploader ]; then
@@ -144,7 +147,8 @@ jobs:
     - name: Get full python version
       id: full-python-version
       run: |
-        echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
+        PY=$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
+        echo "version=$PY" >> "$GITHUB_OUTPUT"
     - name: Install and set up Poetry
       run: |
         pip install poetry
@@ -169,15 +173,17 @@ jobs:
     - name: Build CodeCov Flags
       id: codecov-info
       run: |
-        echo ::set-output name=py_version::$(python -c "import sys; print('py{}{}'.format(*sys.version_info))")
-        echo ::set-output name=uploader-url::$(python -c "print('https://uploader.codecov.io/latest/codecov-macos')")
+        PY_VERSION=$(python -c "import sys; print('py{}{}'.format(*sys.version_info))")
+        UPLOADER_URL="https://uploader.codecov.io/latest/codecov-macos"
+        echo "py-version=$PY_VERSION" >> "$GITHUB_OUTPUT"
+        echo "uploader-url=$UPLOADER_URL" >> "$GITHUB_OUTPUT"
 
     - name: Upload Code Coverage
       if: always()
       shell: bash
       env:
-        REPORT_FLAGS: macos,${{ steps.codecov-info.outputs.py_version }}
-        REPORT_NAME: macos-${{ steps.codecov-info.outputs.py_version }}
+        REPORT_FLAGS: macos,${{ steps.codecov-info.outputs.py-version }}
+        REPORT_NAME: macos-${{ steps.codecov-info.outputs.py-version }}
         REPORT_PATH: coverage.xml
       run: |
         if [ ! -f codecov-uploader ]; then
@@ -237,7 +243,8 @@ jobs:
     - name: Get full python version
       id: full-python-version
       run: |
-        echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
+        PY=$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
+        echo "version=$PY" >> "$GITHUB_OUTPUT"
     - name: Install and set up Poetry
       run: |
         pip install poetry
@@ -261,15 +268,17 @@ jobs:
       id: codecov-info
       shell: bash
       run: |
-        echo ::set-output name=py_version::$(python -c "import sys; print('py{}{}'.format(*sys.version_info))")
-        echo ::set-output name=uploader-url::$(python -c "print('https://uploader.codecov.io/latest/codecov.exe')")
+        PY_VERSION=$(python -c "import sys; print('py{}{}'.format(*sys.version_info))")
+        UPLOADER_URL="https://uploader.codecov.io/latest/codecov.exe"
+        echo "py-version=$PY_VERSION" >> "$GITHUB_OUTPUT"
+        echo "uploader-url=$UPLOADER_URL" >> "$GITHUB_OUTPUT"
 
     - name: Upload Code Coverage
       if: always()
       shell: bash
       env:
-        REPORT_FLAGS: windows,${{ steps.codecov-info.outputs.py_version }}
-        REPORT_NAME: windows-${{ steps.codecov-info.outputs.py_version }}
+        REPORT_FLAGS: windows,${{ steps.codecov-info.outputs.py-version }}
+        REPORT_NAME: windows-${{ steps.codecov-info.outputs.py-version }}
         REPORT_PATH: coverage.xml
       run: |
         if [ ! -f codecov-uploader ]; then
