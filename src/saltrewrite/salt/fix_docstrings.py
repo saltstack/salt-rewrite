@@ -149,7 +149,7 @@ def _convert_version_names_to_numbers(docstring, filename):
 
 
 CLI_EXAMPLE_CASE_AND_SPACING_RE = re.compile(
-    r"(?:[\n]+)([ ]+)CLI Example(?P<plural>s)?(?:[\s]+)?:(?:[^\n]+)?(?:[\n]+)",
+    r"(?:[\n\r]+)([ ]+)CLI Example(?P<plural>s)?(?:[\s]+)?:(?:[^\n\r]+)?(?:[\n\r]+)",
     flags=re.I | re.MULTILINE,
 )
 CLI_EXAMPLE_MISSING_CODE_BLOCK_RE = re.compile(
