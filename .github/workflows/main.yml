@@ -56,21 +56,21 @@ jobs:
       run: |
         PY=$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
         echo "version=$PY" >> "$GITHUB_OUTPUT"
-    - name: Install and set up Poetry
-      run: |
-        pip install poetry
-        poetry config virtualenvs.in-project true
     - name: Set up cache
       uses: actions/cache@v3
       with:
         path: .venv
         key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+    - name: Install and set up Poetry
+      run: |
+        pip install poetry
+        poetry config virtualenvs.in-project true
     - name: Install dependencies
       run: |
         poetry install
     - name: Test
       run: |
-        poetry run coverage run -m pytest -q tests
+        poetry run coverage run -m pytest -v -ra -s tests
         poetry run coverage combine
         poetry run coverage report --fail-under=50 --show-missing
         poetry run coverage xml
@@ -149,15 +149,15 @@ jobs:
       run: |
         PY=$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
         echo "version=$PY" >> "$GITHUB_OUTPUT"
-    - name: Install and set up Poetry
-      run: |
-        pip install poetry
-        poetry config virtualenvs.in-project true
     - name: Set up cache
       uses: actions/cache@v3
       with:
         path: .venv
         key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+    - name: Install and set up Poetry
+      run: |
+        pip install poetry
+        poetry config virtualenvs.in-project true
     - name: Install dependencies
       run: |
         poetry install
@@ -165,7 +165,7 @@ jobs:
       env:
         OBJC_DISABLE_INITIALIZE_FORK_SAFETY: YES
       run: |
-        poetry run coverage run -m pytest -q tests
+        poetry run coverage run -m pytest -v -ra -s tests
         poetry run coverage combine
         poetry run coverage report --fail-under=50 --show-missing
         poetry run coverage xml
@@ -245,21 +245,21 @@ jobs:
       run: |
         PY=$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
         echo "version=$PY" >> "$GITHUB_OUTPUT"
-    - name: Install and set up Poetry
-      run: |
-        pip install poetry
-        poetry config virtualenvs.in-project true
     - name: Set up cache
       uses: actions/cache@v3
       with:
         path: .venv
         key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+    - name: Install and set up Poetry
+      run: |
+        pip install poetry
+        poetry config virtualenvs.in-project true
     - name: Install dependencies
       run: |
         poetry install
     - name: Test
       run: |
-        poetry run coverage run -m pytest -q tests
+        poetry run coverage run -m pytest -v -ra -s tests
         poetry run coverage combine
         poetry run coverage report --fail-under=50 --show-missing
         poetry run coverage xml
