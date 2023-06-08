@@ -96,7 +96,7 @@ def get_utils_module_details(name):
     Return utils module details.
     """
     full_module_name = f"salt.utils.{name}"
-    full_module_path = pathlib.Path(f"{full_module_name.replace('.', os.sep)}.py")
+    full_module_path = pathlib.Path(f"{full_module_name.replace('.', os.sep)}.py").resolve()
     utils_module_info = get_utils_module_info()
     if full_module_path.exists():
         return utils_module_info[full_module_path]
@@ -105,7 +105,7 @@ def get_utils_module_details(name):
         if entry["virtualname"] == modname:
             return entry
     raise RuntimeError(
-        f"Could not find the python module for {name!r} and '{full_module_path}' " "does not exist"
+        f"Could not find the python module for {name!r} and '{full_module_path}' does not exist"
     )
 
 
