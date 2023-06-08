@@ -126,13 +126,13 @@ def _handle_convert_version_names_to_numbers_match(match):
     parsed_versions = []
     for version in versions:
         try:
-            version = SaltStackVersion.from_name(version)
+            parsed_versions.append(SaltStackVersion.from_name(version))
         except ValueError:
             try:
-                version = SaltStackVersion.parse(version)
-            except ValueError:
-                pass
-        parsed_versions.append(version)
+                parsed_versions.append(SaltStackVersion.parse(version))
+            except ValueError as exc:
+                raise RuntimeError(f"Unable to parse '{version}' as a SaltStackVersion") from exc
+
     replace_contents = ".. {}:: {}".format(
         vtype, ",".join([v.string for v in sorted(parsed_versions)])
     )
