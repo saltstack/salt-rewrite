@@ -70,7 +70,7 @@ jobs:
         poetry install
     - name: Test
       run: |
-        poetry run coverage run -m pytest -v -ra -s tests
+        poetry run coverage run -m pytest -v -ra -s --color=yes --full-trace tests
         poetry run coverage combine
         poetry run coverage report --fail-under=50 --show-missing
         poetry run coverage xml
@@ -165,7 +165,7 @@ jobs:
       env:
         OBJC_DISABLE_INITIALIZE_FORK_SAFETY: YES
       run: |
-        poetry run coverage run -m pytest -v -ra -s tests
+        poetry run coverage run -m pytest -v -ra -s --color=yes --full-trace tests
         poetry run coverage combine
         poetry run coverage report --fail-under=50 --show-missing
         poetry run coverage xml
@@ -259,7 +259,7 @@ jobs:
         poetry install
     - name: Test
       run: |
-        poetry run coverage run -m pytest -v -ra -s tests
+        poetry run coverage run -m pytest -v -ra -s --color=yes --full-trace tests
         poetry run coverage combine
         poetry run coverage report --fail-under=50 --show-missing
         poetry run coverage xml
