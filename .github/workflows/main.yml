@@ -241,6 +241,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Get full python version
       id: full-python-version
+      shell: bash
       run: |
         PY=$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
         echo "version=$PY" >> "$GITHUB_OUTPUT"
