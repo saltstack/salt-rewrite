@@ -191,3 +191,30 @@ def test_unsafe_utils_call_not_rewritten(tempfiles, salt_utils_package, salt_dun
     with open(fpath) as rfh:
         new_code = rfh.read()
     assert new_code == code
+
+
+def test_fix_call_trailing_code(tempfiles):
+    code = textwrap.dedent(
+        """
+    import one.two
+
+    def one():
+        one.two.three("four")
+        __utils__["foo.bar"](one="one")["bar"]
+    """
+    )
+    expected_code = textwrap.dedent(
+        """
+    import one.two
+    import salt.utils.foo
+
+    def one():
+        one.two.three("four")
+        salt.utils.foo.bar(one="one")["bar"]
+    """
+    )
+    fpath = tempfiles.makepyfile(code, prefix="test_")
+    fix_dunder_utils.rewrite(fpath)
+    with open(fpath) as rfh:
+        new_code = rfh.read()
+    assert new_code == expected_code

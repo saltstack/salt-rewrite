@@ -56,6 +56,7 @@ class DunderParser(ast.NodeTransformer):  # pylint: disable=missing-class-docstr
     def visit_Name(self, node):
         if node.id in SALT_DUNDERS:
             self.uses_salt_dunders = True
+        return self.generic_visit(node)
 
     def visit_Assign(self, node):
         for target in node.targets:
@@ -63,6 +64,7 @@ class DunderParser(ast.NodeTransformer):  # pylint: disable=missing-class-docstr
                 continue
             if target.id == "__virtualname__":
                 self.virtualname = node.value.s
+        return self.generic_visit(node)
 
     # pylint: enable=missing-function-docstring,invalid-name
 
@@ -122,8 +124,8 @@ def rewrite(paths, interactive=False, silent=False):
                     '__utils__'
                     trailer< '[' dunder_mod_func=any* ']' >
                     trailer< '(' function_arguments=any* ')' >
+                    trailing=any*
                 >
-
             )
             """
         )
@@ -160,6 +162,10 @@ def fix_dunder_utils_calls(node, capture, filename):
     for leaf in capture["function_arguments"]:
         leaf.parent = None
 
+    # Un-parent any trailign code after the __utils__ call too
+    for leaf in capture["trailing"]:
+        leaf.parent = None
+
     # Create the new function call
     call_node = Call(
         Leaf(TOKEN.NAME, utils_module_funcname, prefix=""),
@@ -182,6 +188,7 @@ def fix_dunder_utils_calls(node, capture, filename):
                     call_node,
                 ],
             ),
+            *capture["trailing"],
         ],
     )
     # Replace the whole node with the new function call
