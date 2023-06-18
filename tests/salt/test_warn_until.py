@@ -18,7 +18,7 @@ def test_warn_until_func(tempfiles):
             print("one")
 
         def three():
-            warn_until(3008.0, "Code deprecated in 3008.0")
+            warn_until(3008.1, "Code deprecated in 3008.0")
             print("one")
 
         def four():
@@ -31,19 +31,19 @@ def test_warn_until_func(tempfiles):
         from salt.utils.versions import warn_until
 
         def one():
-            warn_until(3008.0, "Code deprecated in 3008.0")
+            warn_until(3008, "Code deprecated in 3008.0")
             print("one")
 
         def two():
-            warn_until(3008.0, "Code deprecated in 3008.0")
+            warn_until(3008, "Code deprecated in 3008.0")
             print("one")
 
         def three():
-            warn_until(3008.0, "Code deprecated in 3008.0")
+            warn_until(3008, "Code deprecated in 3008.0")
             print("one")
 
         def four():
-            warn_until(3008.0, "Code deprecated in 3008.0")
+            warn_until(3008, "Code deprecated in 3008.0")
             print("one")
         """
     )
@@ -68,7 +68,7 @@ def test_warn_until_func_full_import(tempfiles):
             print("one")
 
         def three():
-            salt.utils.versions.warn_until(3008.0, "Code deprecated in 3008.0")
+            salt.utils.versions.warn_until(3008.1, "Code deprecated in 3008.0")
             print("one")
 
         def four():
@@ -81,19 +81,19 @@ def test_warn_until_func_full_import(tempfiles):
         import salt.utils.versions
 
         def one():
-            salt.utils.versions.warn_until(3008.0, "Code deprecated in 3008.0")
+            salt.utils.versions.warn_until(3008, "Code deprecated in 3008.0")
             print("one")
 
         def two():
-            salt.utils.versions.warn_until(3008.0, "Code deprecated in 3008.0")
+            salt.utils.versions.warn_until(3008, "Code deprecated in 3008.0")
             print("one")
 
         def three():
-            salt.utils.versions.warn_until(3008.0, "Code deprecated in 3008.0")
+            salt.utils.versions.warn_until(3008, "Code deprecated in 3008.0")
             print("one")
 
         def four():
-            salt.utils.versions.warn_until(3008.0, "Code deprecated in 3008.0")
+            salt.utils.versions.warn_until(3008, "Code deprecated in 3008.0")
             print("one")
         """
     )

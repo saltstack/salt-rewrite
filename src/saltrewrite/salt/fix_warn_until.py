@@ -71,4 +71,6 @@ def fix_warn_unil_version(node, capture, filename):
         # Get the value and remove the quotes
         salt_version = SaltStackVersion.parse(warn_until_version_argument.value[1:-1])
     # Replace it with the SaltStackVersion.major attribute
-    arglist.children[0] = Leaf(TOKEN.NUMBER, str(salt_version), prefix=arglist.children[0].prefix)
+    arglist.children[0] = Leaf(
+        TOKEN.NUMBER, str(salt_version.major), prefix=arglist.children[0].prefix
+    )
