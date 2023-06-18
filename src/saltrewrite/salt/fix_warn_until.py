@@ -37,9 +37,26 @@ def rewrite(paths, interactive=False, silent=False):
             )
             """
         )
+        .filter(filter_versions)
         .modify(fix_warn_unil_version)
         .execute(write=True, interactive=interactive, silent=silent)
     )
+
+
+def filter_versions(node, capture, filename):
+    """
+    If the first child is a docstring, process it
+    """
+    arglist = capture["function_arguments"][0]
+    warn_until_version_argument = arglist.children[0]
+    if warn_until_version_argument.type == TOKEN.NUMBER:
+        # For example, 3008, 3009.0
+        return True
+    if warn_until_version_argument.type == TOKEN.STRING:
+        # For example, "3008", "Aragon"
+        return True
+    # Don't process node
+    return False
 
 
 def fix_warn_unil_version(node, capture, filename):
