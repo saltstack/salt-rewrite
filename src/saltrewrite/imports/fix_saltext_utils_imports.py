@@ -6,6 +6,8 @@
 """
 # pylint: disable=no-member
 import logging
+import os
+import pathlib
 
 from bowler import Query
 from bowler import SYMBOL
@@ -27,7 +29,7 @@ def rewrite(paths, interactive=False, silent=False):
         Query(paths)
         .select_module("salt.utils")
         .filter(filter_tornado_imports)
-        #        .rename("salt.ext.tornado")
+        .rename(f"saltext.{os.environ['SALTEXT_MOD']}.utils")
         #        .select_root()
         #        .select("classdef|funcdef")
         #        .filter(filter_not_decorated)
@@ -41,9 +43,14 @@ def filter_tornado_imports(node, capture, filename):
     Filter tornado imports
     """
     log.warning("CAPTURE: %s", capture)
-    for leaf in capture["node"].leaves():
-        if leaf.value == "tornado":
-            return True
+    log.warning("CAPTURE KEYS: %s", list(capture))
+    log.warning("MI: %s", capture["module_name"])
+    return True
+    modname = capture["module_name"].s.split(".")[-1]
+    cwd = pathlib.Path.cwd()
+    if list(cwd.rglob(f"utils/{modname}.py")):
+        return True
+    return False
 
 
 def _get_decorator(node):
