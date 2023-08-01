@@ -1,5 +1,5 @@
 # pylint: disable=missing-module-docstring
-from saltrewrite.imports import fix_tornado_imports
+from saltrewrite.salt_extensions import fix_saltext
 
 __all__ = [modname for modname in list(globals()) if modname.startswith("fix_")]
 

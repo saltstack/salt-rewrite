@@ -10,6 +10,7 @@ from collections import OrderedDict
 import saltrewrite.imports
 import saltrewrite.salt
 import saltrewrite.testsuite
+import saltrewrite.salt_extensions
 
 
 class RegistryClass:
@@ -24,6 +25,7 @@ class RegistryClass:
             saltrewrite.imports.__fixes__
             + saltrewrite.testsuite.__fixes__
             + saltrewrite.salt.__fixes__
+            + saltrewrite.salt_extensions.__fixes__
         )
         __sorted_fixes__ = (
             (module.__name__.split(".")[-1], module)
