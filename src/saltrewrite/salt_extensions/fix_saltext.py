@@ -1,8 +1,9 @@
 """
-    saltrewrite.imports.fix_tornado_imports
+    saltrewrite.salt_extensions.fix_saltext
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    Fix tornado imports
+    Fix imports and module references
+    when migrating Salt modules to extensions
 """
 # pylint: disable=no-member
 import logging
@@ -41,17 +42,19 @@ def rewrite(paths, interactive=False, silent=False):
             .execute(write=True, interactive=interactive, silent=silent)
         )
 
-    
+
 def filter_salt_imports(node, capture, filename):
     """
     Filter salt imports
     """
-    if f"salt.utils.{os.environ['SALTEXT_NAME']}" in f"{capture['node']}" or \
-            f"salt.states.{os.environ['SALTEXT_NAME']}" in f"{capture['node']}" or \
-            f"salt.modules.{os.environ['SALTEXT_NAME']}" in f"{capture['node']}" or \
-            f"from salt.modules import {os.environ['SALTEXT_NAME']}" in f"{capture['node']}" or \
-            f"from salt.states import {os.environ['SALTEXT_NAME']}" in f"{capture['node']}" or \
-            f"from salt.utils import {os.environ['SALTEXT_NAME']}" in f"{capture['node']}":
+    if (
+        f"salt.utils.{os.environ['SALTEXT_NAME']}" in f"{capture['node']}"
+        or f"salt.states.{os.environ['SALTEXT_NAME']}" in f"{capture['node']}"
+        or f"salt.modules.{os.environ['SALTEXT_NAME']}" in f"{capture['node']}"
+        or f"from salt.modules import {os.environ['SALTEXT_NAME']}" in f"{capture['node']}"
+        or f"from salt.states import {os.environ['SALTEXT_NAME']}" in f"{capture['node']}"
+        or f"from salt.utils import {os.environ['SALTEXT_NAME']}" in f"{capture['node']}"
+    ):
         return True
     return False
 
@@ -73,16 +76,20 @@ def replace_patch_arglist(node, capture, filename):
                     if hasattr(_child, "children"):
                         for __child in _child.children:
                             if hasattr(__child, "value"):
-                                if os.environ['SALTEXT_NAME'] in __child.value:
-                                    __child.value = re.sub(mod_sub_pattern, mod_sub_repl, __child.value)
-                                    __child.value = re.sub(util_sub_pattern, util_sub_repl, __child.value)
+                                if os.environ["SALTEXT_NAME"] in __child.value:
+                                    __child.value = re.sub(
+                                        mod_sub_pattern, mod_sub_repl, __child.value
+                                    )
+                                    __child.value = re.sub(
+                                        util_sub_pattern, util_sub_repl, __child.value
+                                    )
                     else:
                         if hasattr(_child, "value"):
-                            if os.environ['SALTEXT_NAME'] in _child.value:
+                            if os.environ["SALTEXT_NAME"] in _child.value:
                                 _child.value = re.sub(mod_sub_pattern, mod_sub_repl, _child.value)
                                 _child.value = re.sub(util_sub_pattern, util_sub_repl, _child.value)
             else:
                 if hasattr(child, "value"):
-                    if os.environ['SALTEXT_NAME'] in child.value:
+                    if os.environ["SALTEXT_NAME"] in child.value:
                         child.value = re.sub(mod_sub_pattern, mod_sub_repl, child.value)
                         child.value = re.sub(util_sub_pattern, util_sub_repl, child.value)
