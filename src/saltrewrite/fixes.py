@@ -9,8 +9,8 @@ from collections import OrderedDict
 
 import saltrewrite.imports
 import saltrewrite.salt
-import saltrewrite.testsuite
 import saltrewrite.salt_extensions
+import saltrewrite.testsuite
 
 
 class RegistryClass:
