@@ -6,6 +6,12 @@ from saltrewrite.salt_extensions import fix_saltext
 
 
 def test_module_level_package_import(tempfiles):
+    if not os.environ.get("SALTEXT_NAME"):
+        os.environ["SALTEXT_NAME"] = "docker"
+
+    if not os.environ.get("SALT_MOD"):
+        os.environ["SALT_MOD"] = "dockermod"
+
     code = textwrap.dedent(
         f"""
     import salt.utils.args
@@ -36,6 +42,12 @@ def test_module_level_package_import(tempfiles):
 
 
 def test_module_level_from_package_import(tempfiles):
+    if not os.environ.get("SALTEXT_NAME"):
+        os.environ["SALTEXT_NAME"] = "docker"
+
+    if not os.environ.get("SALT_MOD"):
+        os.environ["SALT_MOD"] = "dockermod"
+
     code = textwrap.dedent(
         f"""
     from salt.utils import args
@@ -62,6 +74,12 @@ def test_module_level_from_package_import(tempfiles):
 
 
 def test_module_level_patch(tempfiles):
+    if not os.environ.get("SALTEXT_NAME"):
+        os.environ["SALTEXT_NAME"] = "docker"
+
+    if not os.environ.get("SALT_MOD"):
+        os.environ["SALT_MOD"] = "dockermod"
+
     code = textwrap.dedent(
         f"""
     patch_trans_tar = patch(
