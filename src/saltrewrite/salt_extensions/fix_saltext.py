@@ -71,9 +71,9 @@ def replace_patch_arglist(node, capture, filename):
 
     if hasattr(node, "children"):
         for child in node.children:
-            if hasattr(child, "children"):
+            if hasattr(child, "children") and child.children:
                 for _child in child.children:
-                    if hasattr(_child, "children"):
+                    if hasattr(_child, "children") and _child.children:
                         for __child in _child.children:
                             if hasattr(__child, "value"):
                                 if os.environ["SALTEXT_NAME"] in __child.value:
@@ -88,8 +88,3 @@ def replace_patch_arglist(node, capture, filename):
                             if os.environ["SALTEXT_NAME"] in _child.value:
                                 _child.value = re.sub(mod_sub_pattern, mod_sub_repl, _child.value)
                                 _child.value = re.sub(util_sub_pattern, util_sub_repl, _child.value)
-            else:
-                if hasattr(child, "value"):
-                    if os.environ["SALTEXT_NAME"] in child.value:
-                        child.value = re.sub(mod_sub_pattern, mod_sub_repl, child.value)
-                        child.value = re.sub(util_sub_pattern, util_sub_repl, child.value)
