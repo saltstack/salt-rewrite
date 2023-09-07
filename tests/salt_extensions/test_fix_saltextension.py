@@ -83,16 +83,37 @@ def test_module_level_patch(tempfiles):
     code = textwrap.dedent(
         f"""
     patch_trans_tar = patch(
-        "salt.modules.{os.environ['SALT_MOD']}.func",
-        fake_func,
+      "salt.modules.{os.environ['SALT_MOD']}.func",
+      fake_func,
     )
     """
     )
     expected_code = textwrap.dedent(
         f"""
     patch_trans_tar = patch(
-        "saltext.saltext_{os.environ['SALTEXT_NAME']}.modules.{os.environ['SALT_MOD']}.func",
-        fake_func,
+      "saltext.saltext_{os.environ['SALTEXT_NAME']}.modules.{os.environ['SALT_MOD']}.func",
+      fake_func,
+    )
+    """
+    )
+
+    fpath = tempfiles.makepyfile(code)
+    fix_saltext.rewrite(fpath)
+    with open(fpath) as rfh:
+        new_code = rfh.read()
+    assert new_code == expected_code
+
+    code = textwrap.dedent(
+        f"""
+    patch_trans_tar = patch(
+        "salt.modules.{os.environ['SALT_MOD']}.func"
+    )
+    """
+    )
+    expected_code = textwrap.dedent(
+        f"""
+    patch_trans_tar = patch(
+        "saltext.saltext_{os.environ['SALTEXT_NAME']}.modules.{os.environ['SALT_MOD']}.func"
     )
     """
     )
